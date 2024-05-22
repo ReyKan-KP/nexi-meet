@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 // import "./globals.css";
 import "@styles/globals.css";
 import Nav from "@components/Nav";
+import Footer from "@components/Footer";
+import Head from "next/head";
 export const metadata: Metadata = {
   title: "NexiMeet",
   description: "Elevate Your Virtual Events",
@@ -14,16 +16,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <Head>
+        <link rel="icon" href="/images/favicon.ico" />
+      </Head>
       <body>
         {/* <Provider> */}
-          <div className="main">
-            <div className="gradient"></div>
-          </div>
+        <div className="main">
+          <div className="gradient"></div>
+        </div>
 
-          <main className="app">
-            <Nav />
-            {children}
-          </main>
+        <main className="app">
+          <Nav />
+          {children}
+          <Footer />
+        </main>
+
         {/* </Provider> */}
       </body>
     </html>
