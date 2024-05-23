@@ -17,7 +17,7 @@ export const POST = async (request) => {
   }
 
   try {
-    await connectDB();
+    // await connectDB();
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {

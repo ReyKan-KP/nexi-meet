@@ -1,13 +1,16 @@
-"use client"
+"use client";
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Eye, EyeOff } from "lucide-react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const SignIn: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("attendee");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSignIn = async () => {
     try {
@@ -21,15 +24,15 @@ const SignIn: React.FC = () => {
 
       if (response.ok) {
         const data = await response.json();
-        alert(data.message);
+        toast.success(data.message);
         // Store token in localStorage or a cookie
         localStorage.setItem("token", data.token);
       } else {
         const error = await response.json();
-        alert(error.message);
+        toast.error(error.message);
       }
     } catch (error) {
-      alert("An error occurred. Please try again.");
+      toast.error("An error occurred. Please try again.");
     }
   };
 
@@ -124,19 +127,24 @@ const SignIn: React.FC = () => {
                       </span>
                     </Link>
                   </div>
-                  <div className="mt-2">
+                  <div className="mt-2 relative">
                     <input
                       className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       id="password"
                       placeholder="Password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
                     />
+                    <div
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 cursor-pointer"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff /> : <Eye />}
+                    </div>
                   </div>
                 </div>
-
                 <div>
                   <button
                     type="submit"

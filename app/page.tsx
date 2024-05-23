@@ -1,6 +1,21 @@
+"use client"
 import Image from "next/image";
-import "@styles/Landingpage.css";
+// import "@styles/Landingpage.css";
+import { useEffect } from "react";
 export default function Home() {
+  useEffect(() => {
+    const connectDatabase = async () => {
+      try {
+        const response = await fetch("/api/connect-to-db");
+        const data = await response.json();
+        console.log(data.message);
+      } catch (error) {
+        console.error("Failed to connect to MongoDB", error);
+      }
+    };
+
+    connectDatabase();
+  }, []);
   return (
     <div className="container mx-auto">
   <div className="bg-white flex items-center justify-center min-h-screen">

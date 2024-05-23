@@ -1,23 +1,23 @@
 import User from "@models/user";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import connectDB  from "@utils/database";
+import connectDB from "@utils/database";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 export const POST = async (request) => {
   try {
-    const { email, password } = await request.json();
+    const { email, password, role } = await request.json();
 
-    if (!email || !password) {
+    if (!email || !password || !role) {
       return new Response(
         JSON.stringify({ message: "All fields are required" }),
         { status: 400 }
       );
     }
 
-    await connectDB();
+    // await connectDB();
 
     const user = await User.findOne({ email });
     if (!user) {
@@ -25,6 +25,12 @@ export const POST = async (request) => {
         JSON.stringify({ message: "Invalid email or password" }),
         { status: 401 }
       );
+    }
+
+    if (user.role !== role) {
+      return new Response(JSON.stringify({ message: "Role mismatch" }), {
+        status: 403,
+      });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -35,9 +41,13 @@ export const POST = async (request) => {
       );
     }
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(
+      { userId: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1h",
+      }
+    );
 
     return new Response(
       JSON.stringify({ message: "Sign in successful", token }),

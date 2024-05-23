@@ -1,9 +1,11 @@
-"use client"
+"use client";
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react";
+import { toast } from "react-toastify";
 
 const SignUp: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -11,11 +13,11 @@ const SignUp: React.FC = () => {
     role: "",
     email: "",
     password: "",
+    confirmPassword: "",
   });
 
-
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -25,14 +27,39 @@ const SignUp: React.FC = () => {
       [e.target.id]: e.target.value,
     });
   };
+
   const router = useRouter();
 
+  const validateForm = () => {
+    const nameRegex = /^[a-zA-Z]{2,}(?:[-' ][a-zA-Z]{2,})*$/;
+    const emailRegex = /\S+@\S+\.\S+/;
+
+    if (!formData.name || !nameRegex.test(formData.name)) {
+      return "Full Name is required and must be valid.";
+    }
+    if (!formData.role) {
+      return "Role is required.";
+    }
+    if (!formData.email || !emailRegex.test(formData.email)) {
+      return "A valid Email address is required.";
+    }
+    if (!formData.password || formData.password.length < 6) {
+      return "Password must be at least 6 characters long.";
+    }
+    if (formData.password !== formData.confirmPassword) {
+      return "Passwords do not match.";
+    }
+    return null;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
 
+    const error = validateForm();
+    if (error) {
+      toast.error(error);
+      return;
+    }
 
     try {
       const response = await fetch("/api/sign-up", {
@@ -45,15 +72,20 @@ const SignUp: React.FC = () => {
 
       const data = await response.json();
       if (response.ok) {
-        setSuccess(data.message);
-        setFormData({ name: "", role: "", email: "", password: "" })
-        router.push('/sign-in'); // Redirect to /sign-in
-
+        toast.success(data.message);
+        setFormData({
+          name: "",
+          role: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+        });
+        router.push("/sign-in");
       } else {
-        setError(data.message);
+        toast.error(data.message);
       }
     } catch (error) {
-      setError("Something went wrong. Please try again.");
+      toast.error("Something went wrong. Please try again.");
     }
   };
 
@@ -73,10 +105,6 @@ const SignUp: React.FC = () => {
                 </span>
               </Link>
             </p>
-            {error && <p className="mt-2 text-base text-red-600">{error}</p>}
-            {success && (
-              <p className="mt-2 text-base text-green-600">{success}</p>
-            )}
             <form onSubmit={handleSubmit} className="mt-8">
               <div className="space-y-5">
                 <div>
@@ -149,19 +177,51 @@ const SignUp: React.FC = () => {
                   >
                     Password
                   </label>
-                  <div className="mt-2">
+                  <div className="mt-2 relative">
                     <input
                       className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       placeholder="Password"
                       id="password"
                       value={formData.password}
                       onChange={handleChange}
                       required
                     />
+                    <div
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 cursor-pointer"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff /> : <Eye />}
+                    </div>
                   </div>
                 </div>
-
+                <div>
+                  <label
+                    htmlFor="confirmPassword"
+                    className="text-base font-medium text-gray-900"
+                  >
+                    Confirm Password
+                  </label>
+                  <div className="mt-2 relative">
+                    <input
+                      className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                      type={showConfirmPassword ? "text" : "password"}
+                      placeholder="Confirm Password"
+                      id="confirmPassword"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      required
+                    />
+                    <div
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 cursor-pointer"
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
+                    >
+                      {showConfirmPassword ? <EyeOff /> : <Eye />}
+                    </div>
+                  </div>
+                </div>
                 <div>
                   <button
                     type="submit"
