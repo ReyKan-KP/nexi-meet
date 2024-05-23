@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 
-export function SignIn() {
+const SignIn: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("attendee");
@@ -188,6 +188,6 @@ export function SignIn() {
       </div>
     </section>
   );
-}
+};
 
 export default SignIn;
