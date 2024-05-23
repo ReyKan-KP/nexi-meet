@@ -13,6 +13,8 @@ module.exports = {
       },
       colors: {
         "primary-orange": "#FF5722",
+        'custom-start': '#2AFADF',
+        'custom-end': '#4C83FF',
       },
       screens: {
         custom: "1200px",
