@@ -67,7 +67,7 @@ const Nav = () => {
 
       <div className="hidden md:flex items-center space-x-4">
         <Link
-          href="/sign-up"
+          href="/about-us"
           className="text-gray-700 no-underline hover:text-blue-400"
         >
           About Us
