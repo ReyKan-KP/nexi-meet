@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
+import { useRouter } from 'next/navigation';
 
 const SignUp: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -11,6 +12,7 @@ const SignUp: React.FC = () => {
     email: "",
     password: "",
   });
+
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -23,11 +25,14 @@ const SignUp: React.FC = () => {
       [e.target.id]: e.target.value,
     });
   };
+  const router = useRouter();
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setSuccess("");
+
 
     try {
       const response = await fetch("/api/sign-up", {
@@ -41,7 +46,9 @@ const SignUp: React.FC = () => {
       const data = await response.json();
       if (response.ok) {
         setSuccess(data.message);
-        setFormData({ name: "", role: "", email: "", password: "" });
+        setFormData({ name: "", role: "", email: "", password: "" })
+        router.push('/sign-in'); // Redirect to /sign-in
+
       } else {
         setError(data.message);
       }
