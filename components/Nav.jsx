@@ -67,7 +67,7 @@ const Nav = () => {
 
       <div className="hidden md:flex items-center space-x-4">
         <Link
-          href="/about-us"
+          href="/sign-up"
           className="text-gray-700 no-underline hover:text-blue-400"
         >
           About Us
@@ -145,22 +145,25 @@ const Nav = () => {
           Features
         </Link>
         <Link
-          href="#"
+          href="/sign-in"
           className="text-gray-700 no-underline hover:text-blue-400"
         >
-          Pricing
+          Sign In
         </Link>
         <Link
-          href="#"
+          href="/sign-up"
           className="text-gray-700 no-underline hover:text-blue-400"
         >
-          Blog
+          Sign Up
         </Link>
 
-        <button className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:text-blue-400">
+        <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gradient-to-br from-custom-start to-custom-end hover:text-white">
           Request quote
         </button>
-        <button className="px-4 py-2 bg-gradient-to-r from-blue-400 to-blue-600 text-white rounded">
+        <button
+          className="px-4 py-2 bg-gradient-to-br from-custom-start to-custom-end text-white rounded-lg
+        "
+        >
           Meet an Event Planner
         </button>
       </div>
@@ -168,7 +171,7 @@ const Nav = () => {
       {isSideMenuOpen && (
         <div
           ref={sideMenuRef}
-          className="fixed inset-0 z-50 bg-gray-800 bg-opacity-75 flex flex-col items-center justify-center md:hidden "
+          className="fixed inset-0 z-50 bg-gray-800 bg-opacity-75 flex flex-col items-center justify-center md:hidden"
         >
           <button
             className="absolute top-4 right-4 text-white"
@@ -275,22 +278,25 @@ const Nav = () => {
             Features
           </Link>
           <Link
-            href="#"
+            href="/sign-in"
             className="text-white no-underline hover:text-blue-400 mb-4"
           >
-            Pricing
+            Sign In
           </Link>
           <Link
-            href="#"
+            href="/sign-up"
             className="text-white no-underline hover:text-blue-400 mb-4"
           >
-            Blog
+            Sign Up
           </Link>
 
-          <button className="px-4 py-2 border border-white rounded text-white hover:text-blue-400 mb-4">
+          <button className="px-4 py-2 border border-white rounded text-white hover:bg-gradient-to-br from-custom-start to-custom-end hover:text-white mb-4">
             Request quote
           </button>
-          <button className="px-4 py-2 bg-gradient-to-r from-blue-400 to-blue-600 text-white rounded mb-4">
+          <button
+            className="px-4 py-2 bg-gradient-to-br from-custom-start to-custom-end text-white rounded mb-4
+          "
+          >
             Meet an Event Planner
           </button>
         </div>
