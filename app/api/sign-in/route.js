@@ -17,7 +17,7 @@ export const POST = async (request) => {
       );
     }
 
-    // await connectDB();
+    await connectDB();
 
     const user = await User.findOne({ email });
     if (!user) {
