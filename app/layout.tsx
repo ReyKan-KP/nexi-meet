@@ -20,9 +20,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <Head>
-        <link rel="icon" href="/images/favicon.ico" />
-      </Head>
+      <head>
+        <link rel="icon" href="/images/nexi_meet.ico" />
+      </head>
       <body>
         <Provider session={session}>
           {" "}
