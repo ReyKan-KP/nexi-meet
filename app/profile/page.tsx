@@ -30,7 +30,11 @@ const MyProfile: React.FC = () => {
   const { data: session, status } = useSession() as { data: SessionData, status: "loading" | "authenticated" | "unauthenticated" };
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState<string>("General Information");
-  const [userProfile, setUserProfile] = useState({});
+  const [userProfile, setUserProfile] = useState<{
+    name?: string;
+    email?: string;
+    image?: string;
+  }>({});
 
    useEffect(() => {
      if (status === "authenticated" && session?.user) {
