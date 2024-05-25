@@ -15,7 +15,6 @@ import SpeakerSection from "@components/ProfileComponents/RoleSpecific/SpeakerSe
 import ExhibitorSection from "@components/ProfileComponents/RoleSpecific/ExhibitorSection";
 import AttendeeSection from "@components/ProfileComponents/RoleSpecific/AttendeeSection";
 
-
 interface SessionData {
   user?: {
     name?: string;
@@ -27,7 +26,10 @@ interface SessionData {
 }
 
 const MyProfile: React.FC = () => {
-  const { data: session, status } = useSession() as { data: SessionData, status: "loading" | "authenticated" | "unauthenticated" };
+  const { data: session, status } = useSession() as {
+    data: SessionData;
+    status: "loading" | "authenticated" | "unauthenticated";
+  };
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState<string>("General Information");
   const [userProfile, setUserProfile] = useState<{
@@ -36,29 +38,33 @@ const MyProfile: React.FC = () => {
     image?: string;
   }>({});
 
-   useEffect(() => {
-     if (status === "authenticated" && session?.user) {
-       const userId = session?.user?.id;
+  useEffect(() => {
+    if (status === "authenticated" && session?.user) {
+      const userId = session?.user?.id;
 
-       const fetchUserProfile = async () => {
-         try {
-           const response = await fetch(`/api/updateProfile?id=${userId}`);
-           if (!response.ok) {
-             throw new Error("Failed to fetch user profile");
-           }
-           const data = await response.json();
-           setUserProfile(data);
-         } catch (error) {
-           console.error("Error fetching user profile:", error);
-         }
-       };
+      const fetchUserProfile = async () => {
+        try {
+          const response = await fetch(`/api/updateProfile?id=${userId}`);
+          if (!response.ok) {
+            throw new Error("Failed to fetch user profile");
+          }
+          const data = await response.json();
+          setUserProfile(data);
+        } catch (error) {
+          console.error("Error fetching user profile:", error);
+        }
+      };
 
-       fetchUserProfile();
-     }
-   }, [status, session]);
+      fetchUserProfile();
+    }
+  }, [status, session]);
 
   if (status === "loading") {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        Loading...
+      </div>
+    );
   }
 
   const tabs = [
@@ -69,22 +75,21 @@ const MyProfile: React.FC = () => {
     "Linked Social Accounts",
     "Calendar",
   ];
-const { name, email, image } = userProfile;
+
+  const { name, email, image } = userProfile;
   return (
     <div className="container mx-auto px-4 py-10 sm:px-6 sm:py-16 lg:px-8 lg:py-24">
       <div className="bg-white shadow rounded-lg p-6">
-        <div className="flex items-center space-x-6">
+        <div className="flex flex-col items-center space-y-4 md:flex-row md:items-start md:space-x-6">
           <Image
             src={image || "/images/user1.png"}
             width={80}
             height={80}
             alt="Profile"
-            className="w-20 h-20 rounded-full"
+            className="w-20 h-20 rounded-full shadow-lg"
           />
-          <div>
-            <h1 className="text-xl font-bold text-black">
-              {name}
-            </h1>
+          <div className="text-center md:text-left">
+            <h1 className="text-2xl font-bold text-black">{name}</h1>
             <p className="text-gray-600">{email}</p>
             <p className="text-gray-600">Role: {session?.user?.role}</p>
           </div>
@@ -95,15 +100,15 @@ const { name, email, image } = userProfile;
         selectedIndex={tabs.indexOf(selectedTab)}
         onChange={(index: number) => setSelectedTab(tabs[index])}
       >
-        <Tab.List className="flex space-x-4 mt-4">
+        <Tab.List className="flex flex-wrap justify-center md:justify-start gap-2 mt-6">
           {tabs.map((tab) => (
             <Tab
               key={tab}
               className={({ selected }: { selected: boolean }) =>
-                `py-2 px-4 rounded-lg font-semibold ${
+                `py-2 px-4 rounded-lg font-semibold transition ${
                   selected
-                    ? "bg-black text-white"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    ? "bg-black text-white shadow-lg"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300 hover:shadow-md"
                 }`
               }
             >
@@ -136,7 +141,6 @@ const { name, email, image } = userProfile;
   );
 };
 
-
 interface RoleSpecificProps {
   role: string | undefined;
 }
@@ -154,7 +158,9 @@ const RoleSpecific: React.FC<RoleSpecificProps> = ({ role }) => {
     // case "Support Staff":
     //   return <SupportSection />;
     default:
-      return <div>Role-specific content not available.</div>;
+      return (
+        <div className="text-center">Role-specific content not available.</div>
+      );
   }
 };
 
@@ -165,6 +171,4 @@ const RoleSpecific: React.FC<RoleSpecificProps> = ({ role }) => {
 //   </div>
 // );
 
-
 export default MyProfile;
-

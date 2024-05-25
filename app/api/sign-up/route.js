@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import connectDB from "@utils/database";
 import dotenv from "dotenv";
+import { profile } from "console";
 
 dotenv.config();
 
@@ -46,6 +47,7 @@ export const POST = async (request) => {
       phoneNumber: "",
       bio: "",
       image: "",
+      profileVisibility: "Public",
     });
 
     await newUserProfile.save();

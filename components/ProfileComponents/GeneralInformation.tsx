@@ -1,4 +1,3 @@
-//component/ProfileComponents/GeneralInformation.tsx
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -78,7 +77,7 @@ const GeneralInformation: React.FC = () => {
       }
 
       toast.success("Profile updated successfully");
-      router.push("/profile"); // Redirect to homepage or profile page
+      router.push("/profile");
     } catch (error) {
       console.error("Error updating profile:", error);
       toast.error("Error updating profile: " + error);
@@ -86,52 +85,58 @@ const GeneralInformation: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="max-w-3xl mx-auto p-4 sm:p-6 lg:p-8 bg-white shadow-md rounded-md">
       <ToastContainer />
-      <h2 className="text-lg font-bold text-black mb-2">General Information</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block text-gray-700">Name</label>
+      <h2 className="text-2xl font-bold text-black mb-6">
+        General Information
+      </h2>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <label className="block text-gray-700 font-medium">Name</label>
           <input
             type="text"
             name="name"
             value={formData.name}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1"
+            className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Email</label>
+        <div>
+          <label className="block text-gray-700 font-medium">Email</label>
           <input
             type="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1"
+            className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Phone Number</label>
+        <div>
+          <label className="block text-gray-700 font-medium">
+            Phone Number
+          </label>
           <input
             type="tel"
             name="phoneNumber"
             value={formData.phoneNumber}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1"
+            className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Bio</label>
+        <div>
+          <label className="block text-gray-700 font-medium">Bio</label>
           <textarea
             name="bio"
             value={formData.bio}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1"
+            className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             rows={4}
           ></textarea>
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Profile Picture</label>
+        <div>
+          <label className="block text-gray-700 font-medium">
+            Profile Picture
+          </label>
           <input
             type="file"
             accept="image/*"
@@ -144,7 +149,7 @@ const GeneralInformation: React.FC = () => {
                 }));
               }
             }}
-            className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-black file:text-white hover:file:bg-gray-700"
+            className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700"
           />
           {formData.image && (
             <div className="mt-4">
@@ -160,7 +165,7 @@ const GeneralInformation: React.FC = () => {
         </div>
         <button
           type="submit"
-          className="inline-flex items-center justify-center rounded-md bg-black px-3.5 py-2.5 font-semibold leading-7 text-white hover:bg-black/80"
+          className="inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 font-semibold text-white hover:bg-indigo-700"
         >
           Update
         </button>

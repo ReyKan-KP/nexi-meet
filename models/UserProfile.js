@@ -8,6 +8,11 @@ const userProfileSchema = new mongoose.Schema({
   phoneNumber: { type: String },
   bio: { type: String },
   image: { type: String },
+  profileVisibility: {
+    type: String,
+    enum: ["Public", "Private", "Friends Only"],
+    default: "Public",
+  },
 });
 
 userProfileSchema.pre("save", async function (next) {
