@@ -141,7 +141,7 @@ const CalendarWithNotes: React.FC = () => {
         <div className="flex flex-col items-center">
           <h2 className="text-lg font-bold text-black mb-2">Calendar</h2>
           <Calendar
-            onChange={setValue}
+            onChange={(value) => setValue(value as Date)}
             value={value}
             className="mb-4"
             tileContent={({ date, view }) =>
