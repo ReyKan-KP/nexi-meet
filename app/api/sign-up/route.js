@@ -1,4 +1,5 @@
 import User from "@models/user";
+import UserProfile from "@models/UserProfile";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import connectDB from "@utils/database";
@@ -17,7 +18,7 @@ export const POST = async (request) => {
   }
 
   try {
-    // await connectDB();
+    await connectDB();
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -37,6 +38,17 @@ export const POST = async (request) => {
     });
 
     await newUser.save();
+
+    const newUserProfile = new UserProfile({
+      user: newUser._id,
+      name,
+      email,
+      phoneNumber: "",
+      bio: "",
+      image: "",
+    });
+
+    await newUserProfile.save();
 
     const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
       expiresIn: "1h",

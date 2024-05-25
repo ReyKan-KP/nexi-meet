@@ -1,38 +1,35 @@
+// components/SignIn.tsx
+
 "use client";
 import React, { useState } from "react";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Eye, EyeOff } from "lucide-react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useRouter } from "next/navigation";
 
 const SignIn: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("attendee");
   const [showPassword, setShowPassword] = useState(false);
+  const Router = useRouter();
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const result = await signIn("credentials", {
+      redirect: false,
+      email,
+      password,
+      role,
+    });
 
-  const handleSignIn = async () => {
-    try {
-      const response = await fetch("/api/sign-in", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password, role }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        toast.success(data.message);
-        // Store token in localStorage or a cookie
-        localStorage.setItem("token", data.token);
-      } else {
-        const error = await response.json();
-        toast.error(error.message);
-      }
-    } catch (error) {
-      toast.error("An error occurred. Please try again.");
+    if (result?.error) {
+      toast.error(result.error);
+    } else {
+      toast.success("Sign in successful");
+      Router.push("/profile");
     }
   };
 
@@ -64,13 +61,7 @@ const SignIn: React.FC = () => {
                 </span>
               </Link>
             </p>
-            <form
-              className="mt-8"
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSignIn();
-              }}
-            >
+            <form className="mt-8" onSubmit={handleSignIn}>
               <div className="space-y-5">
                 <div>
                   <label

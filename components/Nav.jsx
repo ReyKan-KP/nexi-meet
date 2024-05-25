@@ -2,9 +2,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
+import { useSession, signOut } from "next-auth/react";
 
 const Nav = () => {
-  const [isUserLoggedIn, setIsUserLoggedIn] = useState(true);
+  const { data: session } = useSession();
   const [toggleDropdown, setToggleDropdown] = useState(false);
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -72,7 +73,6 @@ const Nav = () => {
         >
           About Us
         </Link>
-
         <div className="relative" ref={dropdownRef}>
           <div
             className="flex items-center cursor-pointer"
@@ -137,26 +137,37 @@ const Nav = () => {
             </div>
           )}
         </div>
-
         <Link
           href="#"
           className="text-gray-700 no-underline hover:text-blue-400"
         >
           Features
         </Link>
-        <Link
-          href="/sign-in"
-          className="text-gray-700 no-underline hover:text-blue-400"
-        >
-          Sign In
-        </Link>
-        <Link
-          href="/sign-up"
-          className="text-gray-700 no-underline hover:text-blue-400"
-        >
-          Sign Up
-        </Link>
-
+        {session ? (
+          <>
+            <button
+              onClick={() => signOut()}
+              className="text-gray-700 no-underline hover:text-blue-400"
+            >
+              Sign Out
+            </button>
+          </>
+        ) : (
+          <>
+            <Link
+              href="/sign-in"
+              className="text-gray-700 no-underline hover:text-blue-400"
+            >
+              Sign In
+            </Link>
+            <Link
+              href="/sign-up"
+              className="text-gray-700 no-underline hover:text-blue-400"
+            >
+              Sign Up
+            </Link>
+          </>
+        )}
         <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gradient-to-br from-custom-start to-custom-end hover:text-white">
           Request quote
         </button>
@@ -166,6 +177,20 @@ const Nav = () => {
         >
           Meet an Event Planner
         </button>
+        {session && (
+          <Link
+            href="/profile"
+            className="text-gray-700 no-underline hover:text-blue-400 flex flex-end items-center"
+          >
+            <Image
+              src="/images/user1.png"
+              alt=""
+              width={70}
+              height={70}
+              className="rounded-full"
+            />
+          </Link>
+        )}
       </div>
 
       {isSideMenuOpen && (
@@ -192,6 +217,22 @@ const Nav = () => {
               ></path>
             </svg>
           </button>
+          {session && (
+            <Link
+              href="/profile"
+              className="text-white no-underline hover:text-blue-400 mb-4 flex items-center"
+              onClick={handleSideMenuToggle}
+            >
+              <Image
+                src={session.user.image || "/images/user1.png"}
+                alt="Profile Picture"
+                width={80}
+                height={80}
+                className="rounded-full"
+              />
+              {/* <span className="ml-2">My Profile</span> */}
+            </Link>
+          )}
           <Link
             href="/about-us"
             className="text-white no-underline hover:text-blue-400 mb-4"
@@ -277,19 +318,45 @@ const Nav = () => {
           >
             Features
           </Link>
-          <Link
-            href="/sign-in"
-            className="text-white no-underline hover:text-blue-400 mb-4"
-          >
-            Sign In
-          </Link>
-          <Link
-            href="/sign-up"
-            className="text-white no-underline hover:text-blue-400 mb-4"
-          >
-            Sign Up
-          </Link>
-
+          {session ? (
+            <>
+              <Link
+                href="/profile"
+                className="text-white no-underline hover:text-blue-400 mb-4 flex items-center"
+                onClick={handleSideMenuToggle}
+              >
+                <Image
+                  // src={session.user.image || "/users/defaultUser.png"}
+                  alt="Profile Picture"
+                  width={32}
+                  height={32}
+                  className="rounded-full"
+                />
+                <span className="ml-2">My Profile</span>
+              </Link>
+              <button
+                onClick={() => signOut()}
+                className="text-white no-underline hover:text-blue-400 mb-4"
+              >
+                Sign Out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/sign-in"
+                className="text-white no-underline hover:text-blue-400 mb-4"
+              >
+                Sign In
+              </Link>
+              <Link
+                href="/sign-up"
+                className="text-white no-underline hover:text-blue-400 mb-4"
+              >
+                Sign Up
+              </Link>
+            </>
+          )}
           <button className="px-4 py-2 border border-white rounded text-white hover:bg-gradient-to-br from-custom-start to-custom-end hover:text-white mb-4">
             Request quote
           </button>
