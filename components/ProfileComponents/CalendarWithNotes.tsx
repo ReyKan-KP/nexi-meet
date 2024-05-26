@@ -131,7 +131,7 @@ const CalendarWithNotes: React.FC = () => {
     );
     if (note) {
       setHoveredNote(note.text);
-      setHoverPosition({ x: e.clientX , y: e.clientY });
+      setHoverPosition({ x: e.clientX, y: e.clientY });
     }
   };
 
@@ -141,7 +141,7 @@ const CalendarWithNotes: React.FC = () => {
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (hoveredNote) {
-      setHoverPosition({ x: e.clientX , y: e.clientY });
+      setHoverPosition({ x: e.clientX, y: e.clientY });
     }
   };
 
@@ -176,7 +176,7 @@ const CalendarWithNotes: React.FC = () => {
       <ToastContainer />
       <div className="w-full lg:flex lg:space-x-8 mb-8">
         <div className="w-full lg:w-1/2 mb-8 lg:mb-0">
-          <h2 className="text-2xl font-bold text-black mb-4">Calendar</h2>
+          <h2 className="text-2xl font-bold text-teal-600 mb-4">Calendar</h2>
           <Calendar
             onChange={(value) => setValue(value as Date)}
             value={value}
@@ -205,44 +205,44 @@ const CalendarWithNotes: React.FC = () => {
             Selected Date: {format(value, "MMMM d, yyyy")}
           </p>
           <div>
-            <h3 className="text-md font-semibold text-black mb-2">
+            <h3 className="text-md font-semibold text-teal-600 mb-2">
               {editIndex !== null ? "Edit Note" : "Add Note"}
             </h3>
             <textarea
-              className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 mb-2"
+              className="w-full rounded-md border border-teal-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 mb-2"
               rows={3}
               value={noteText}
               onChange={(e) => setNoteText(e.target.value)}
             ></textarea>
             <button
               onClick={addOrEditNote}
-              className="inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 font-semibold text-white hover:bg-indigo-700"
+              className="inline-flex items-center justify-center rounded-md bg-teal-600 px-4 py-2 font-semibold text-white hover:bg-teal-700"
             >
               {editIndex !== null ? "Update Note" : "Add Note"}
             </button>
           </div>
         </div>
         <div className="w-full lg:w-1/2">
-          <h2 className="text-2xl font-bold text-black mb-4 flex items-center">
+          <h2 className="text-2xl font-bold text-teal-600 mb-4 flex items-center">
             Notes Table
             <button
               onClick={toggleSortOrder}
-              className="ml-2 text-indigo-600 hover:text-indigo-800"
+              className="ml-2 text-teal-600 hover:text-teal-800"
             >
               {sortOrder === "asc" ? <ArrowUp /> : <ArrowDown />}
             </button>
           </h2>
           <div className="overflow-x-auto">
-            <table className="min-w-full table-auto border-collapse border border-gray-300">
+            <table className="min-w-full table-auto border-collapse border border-teal-300">
               <thead>
-                <tr className="bg-gray-100">
-                  <th className="border border-gray-300 px-4 py-2 text-left">
+                <tr className="bg-teal-50">
+                  <th className="border border-teal-300 px-4 py-2 text-left">
                     Date
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 text-left">
+                  <th className="border border-teal-300 px-4 py-2 text-left">
                     Note
                   </th>
-                  <th className="border border-gray-300 px-4 py-2 text-left">
+                  <th className="border border-teal-300 px-4 py-2 text-left">
                     Actions
                   </th>
                 </tr>
@@ -251,22 +251,22 @@ const CalendarWithNotes: React.FC = () => {
                 {sortedNotes.map((note, index) => (
                   <tr
                     key={note._id}
-                    className="hover:bg-gray-50 cursor-pointer"
+                    className="hover:bg-teal-50 cursor-pointer"
                     onClick={() => handleDateClick(note.date)}
                   >
-                    <td className="border border-gray-300 px-4 py-2">
+                    <td className="border border-teal-300 px-4 py-2">
                       {format(note.date, "MMMM d, yyyy")}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2">
+                    <td className="border border-teal-300 px-4 py-2">
                       {note.text}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2 flex space-x-2">
+                    <td className="border border-teal-300 px-4 py-2 flex space-x-2">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleEditNote(index);
                         }}
-                        className="text-indigo-500 hover:text-indigo-700"
+                        className="text-teal-500 hover:text-teal-700"
                       >
                         <Pencil />
                       </button>
@@ -289,8 +289,8 @@ const CalendarWithNotes: React.FC = () => {
       </div>
       {hoveredNote && (
         <div
-          className="absolute bg-white border border-gray-300 p-2 rounded shadow-lg"
-          style={{ top: hoverPosition.y+20, left: hoverPosition.x+20 }}
+          className="absolute bg-white border border-teal-300 p-2 rounded shadow-lg"
+          style={{ top: hoverPosition.y + 20, left: hoverPosition.x + 20 }}
         >
           {hoveredNote}
         </div>

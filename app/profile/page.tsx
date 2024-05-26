@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Tab } from "@headlessui/react";
 import Image from "next/image";
-import GeneralInformation from "@components/ProfileComponents/GeneralInformation";
+import UserProfileForm from "@components/ProfileComponents/UserProfileForm";
 import PrivacySettings from "@components/ProfileComponents/PrivacySettings";
 import ActivityLog from "@components/ProfileComponents/ActivityLog";
 import LinkedSocialAccounts from "@components/ProfileComponents/LinkedSocialAccounts";
@@ -68,7 +68,7 @@ const MyProfile: React.FC = () => {
   }
 
   const tabs = [
-    "General Information",
+    "Update Profile",
     "Role-Specific",
     "Privacy Settings",
     "Activity Log",
@@ -89,7 +89,7 @@ const MyProfile: React.FC = () => {
             className="w-20 h-20 rounded-full shadow-lg"
           />
           <div className="text-center md:text-left">
-            <h1 className="text-2xl font-bold text-black">{name}</h1>
+            <h1 className="text-2xl font-bold text-teal-700">{name}</h1>
             <p className="text-gray-600">{email}</p>
             <p className="text-gray-600">Role: {session?.user?.role}</p>
           </div>
@@ -107,8 +107,8 @@ const MyProfile: React.FC = () => {
               className={({ selected }: { selected: boolean }) =>
                 `py-2 px-4 rounded-lg font-semibold transition ${
                   selected
-                    ? "bg-black text-white shadow-lg"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300 hover:shadow-md"
+                    ? "bg-teal-700 text-white shadow-lg"
+                    : "bg-gray-200 text-gray-700 hover:bg-teal-500 hover:text-white"
                 }`
               }
             >
@@ -118,7 +118,7 @@ const MyProfile: React.FC = () => {
         </Tab.List>
         <Tab.Panels className="mt-4">
           <Tab.Panel>
-            <GeneralInformation />
+            <UserProfileForm />
           </Tab.Panel>
           <Tab.Panel>
             <RoleSpecific role={session?.user?.role} />
@@ -159,7 +159,9 @@ const RoleSpecific: React.FC<RoleSpecificProps> = ({ role }) => {
     //   return <SupportSection />;
     default:
       return (
-        <div className="text-center">Role-specific content not available.</div>
+        <div className="text-center text-teal-700">
+          Role-specific content not available.
+        </div>
       );
   }
 };

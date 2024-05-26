@@ -98,42 +98,22 @@ const Nav = () => {
           </div>
           {toggleDropdown && (
             <div className="absolute left-0 mt-2 bg-gray-100 shadow-lg rounded-lg w-48">
-              <Link
-                href="#"
-                className="block px-4 py-2 text-gray-700 no-underline hover:text-blue-400"
-              >
-                Trade Shows
-              </Link>
-              <Link
-                href="#"
-                className="block px-4 py-2 text-gray-700 no-underline hover:text-blue-400"
-              >
-                Events Marketing
-              </Link>
-              <Link
-                href="#"
-                className="block px-4 py-2 text-gray-700 no-underline hover:text-blue-400"
-              >
-                Networking
-              </Link>
-              <Link
-                href="#"
-                className="block px-4 py-2 text-gray-700 no-underline hover:text-blue-400"
-              >
-                Career Fairs
-              </Link>
-              <Link
-                href="#"
-                className="block px-4 py-2 text-gray-700 no-underline hover:text-blue-400"
-              >
-                Recruiting Sessions
-              </Link>
-              <Link
-                href="#"
-                className="block px-4 py-2 text-gray-700 no-underline hover:text-blue-400"
-              >
-                Event Production
-              </Link>
+              {[
+                "Trade Shows",
+                "Events Marketing",
+                "Networking",
+                "Career Fairs",
+                "Recruiting Sessions",
+                "Event Production",
+              ].map((item) => (
+                <Link
+                  href="#"
+                  key={item}
+                  className="block px-4 py-2 text-gray-700 no-underline hover:text-blue-400"
+                >
+                  {item}
+                </Link>
+              ))}
             </div>
           )}
         </div>
@@ -144,14 +124,12 @@ const Nav = () => {
           Features
         </Link>
         {session ? (
-          <>
-            <button
-              onClick={() => signOut()}
-              className="text-gray-700 no-underline hover:text-blue-400"
-            >
-              Sign Out
-            </button>
-          </>
+          <button
+            onClick={() => signOut({ callbackUrl: "/" })}
+            className="text-gray-700 no-underline hover:text-blue-400"
+          >
+            Sign Out
+          </button>
         ) : (
           <>
             <Link
@@ -171,20 +149,17 @@ const Nav = () => {
         <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gradient-to-br from-custom-start to-custom-end hover:text-white">
           Request quote
         </button>
-        <button
-          className="px-4 py-2 bg-gradient-to-br from-custom-start to-custom-end text-white rounded-lg
-        "
-        >
+        <button className="px-4 py-2 bg-gradient-to-br from-custom-start to-custom-end text-white rounded-lg">
           Meet an Event Planner
         </button>
         {session && (
           <Link
             href="/profile"
-            className="text-gray-700 no-underline hover:text-blue-400 flex flex-end items-center"
+            className="text-gray-700 no-underline hover:text-blue-400 flex items-center"
           >
             <Image
               src="/images/user1.png"
-              alt=""
+              alt="Profile Picture"
               width={70}
               height={70}
               className="rounded-full"
@@ -230,7 +205,6 @@ const Nav = () => {
                 height={80}
                 className="rounded-full"
               />
-              {/* <span className="ml-2">My Profile</span> */}
             </Link>
           )}
           <Link
@@ -240,7 +214,6 @@ const Nav = () => {
           >
             About Us
           </Link>
-
           <div className="relative mb-4">
             <div
               className="flex items-center cursor-pointer"
@@ -266,52 +239,26 @@ const Nav = () => {
             </div>
             {toggleDropdown && (
               <div className="mt-2 mb-2 bg-transparent rounded-lg w-48 flex flex-col items-center">
-                <Link
-                  href="#"
-                  className="block px-4 py-2 text-white no-underline hover:text-blue-400"
-                  onClick={handleSideMenuToggle}
-                >
-                  Trade Shows
-                </Link>
-                <Link
-                  href="#"
-                  className="block px-4 py-2 text-white no-underline hover:text-blue-400"
-                  onClick={handleSideMenuToggle}
-                >
-                  Events Marketing
-                </Link>
-                <Link
-                  href="#"
-                  className="block px-4 py-2 text-white no-underline hover:text-blue-400"
-                  onClick={handleSideMenuToggle}
-                >
-                  Networking
-                </Link>
-                <Link
-                  href="#"
-                  className="block px-4 py-2 text-white no-underline hover:text-blue-400"
-                  onClick={handleSideMenuToggle}
-                >
-                  Career Fairs
-                </Link>
-                <Link
-                  href="#"
-                  className="block px-4 py-2 text-white no-underline hover:text-blue-400"
-                  onClick={handleSideMenuToggle}
-                >
-                  Recruiting Sessions
-                </Link>
-                <Link
-                  href="#"
-                  className="block px-4 py-2 text-white no-underline hover:text-blue-400"
-                  onClick={handleSideMenuToggle}
-                >
-                  Event Production
-                </Link>
+                {[
+                  "Trade Shows",
+                  "Events Marketing",
+                  "Networking",
+                  "Career Fairs",
+                  "Recruiting Sessions",
+                  "Event Production",
+                ].map((item) => (
+                  <Link
+                    href="#"
+                    key={item}
+                    className="block px-4 py-2 text-white no-underline hover:text-blue-400"
+                    onClick={handleSideMenuToggle}
+                  >
+                    {item}
+                  </Link>
+                ))}
               </div>
             )}
           </div>
-
           <Link
             href="#"
             className="text-white no-underline hover:text-blue-400 mb-4"
@@ -320,22 +267,21 @@ const Nav = () => {
           </Link>
           {session ? (
             <>
-              <Link
+              {/* <Link
                 href="/profile"
                 className="text-white no-underline hover:text-blue-400 mb-4 flex items-center"
                 onClick={handleSideMenuToggle}
               >
                 <Image
-                  // src={session.user.image || "/users/defaultUser.png"}
                   alt="Profile Picture"
                   width={32}
                   height={32}
                   className="rounded-full"
                 />
                 <span className="ml-2">My Profile</span>
-              </Link>
+              </Link> */}
               <button
-                onClick={() => signOut()}
+                onClick={() => signOut({ callbackUrl: "/" })}
                 className="text-white no-underline hover:text-blue-400 mb-4"
               >
                 Sign Out
@@ -360,10 +306,7 @@ const Nav = () => {
           <button className="px-4 py-2 border border-white rounded text-white hover:bg-gradient-to-br from-custom-start to-custom-end hover:text-white mb-4">
             Request quote
           </button>
-          <button
-            className="px-4 py-2 bg-gradient-to-br from-custom-start to-custom-end text-white rounded mb-4
-          "
-          >
+          <button className="px-4 py-2 bg-gradient-to-br from-custom-start to-custom-end text-white rounded mb-4">
             Meet an Event Planner
           </button>
         </div>
