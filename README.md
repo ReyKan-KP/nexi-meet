@@ -1,6 +1,3 @@
-
-# NexiMeet
-
 ![NexiMeet Logo](https://iili.io/JL4Q73u.png)
 
 NexiMeet is a robust platform built on Next.js, TypeScript, GraphQL, and PostgreSQL, designed to facilitate seamless virtual events. From conferences and webinars to trade shows, NexiMeet offers a comprehensive suite of features including live streaming, interactive sessions, and customizable virtual exhibitor booths.
