@@ -29,7 +29,7 @@ To run NexiMeet locally, follow these steps:
 1. Clone the repository:
    ```bash
    git clone https://github.com/ReyKan-KP/nexi-meet.git
-   cd NexiMeet
+   cd nexi-meet
    ```
 
 2. Install dependencies:
