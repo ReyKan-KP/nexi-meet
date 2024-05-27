@@ -1,6 +1,6 @@
 ![NexiMeet Logo](https://iili.io/JL4Q73u.png)
 
-NexiMeet is a robust platform built on Next.js, TypeScript, GraphQL, and PostgreSQL, designed to facilitate seamless virtual events. From conferences and webinars to trade shows, NexiMeet offers a comprehensive suite of features including live streaming, interactive sessions, and customizable virtual exhibitor booths.
+NexiMeet is a robust platform built on Next.js, TypeScript, MongoDB, and PostgreSQL, designed to facilitate seamless virtual events. From conferences and webinars to trade shows, NexiMeet offers a comprehensive suite of features including live streaming, interactive sessions, and customizable virtual exhibitor booths.
 
 ## Deployed Application
 
@@ -9,7 +9,7 @@ The project is deployed and accessible at [NexiMeet Deployment](https://nexi-mee
 ## Tech Stack
 
 - **Frontend**: Next.js, TypeScript
-- **Backend**: GraphQL, PostgreSQL
+- **Backend**: MongoDB, PostgreSQL
 - **DevOps**: Docker, Jenkins, Prometheus
 
 ## Features
