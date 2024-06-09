@@ -52,9 +52,14 @@ const handler = NextAuth({
       if (token) {
         session.user.id = token.id;
         session.user.role = token.role;
+        const userProfile = await UserProfile.findOne({
+          email: session.user.email,
+        });
+        if (userProfile) {
+          session.user.image = userProfile.image;
+        }
       }
 
-      // Update session for GoogleProvider if necessary
       if (token.provider === "google") {
         await connectToDB();
 
@@ -62,6 +67,10 @@ const handler = NextAuth({
         if (user) {
           session.user.id = user._id;
           session.user.role = user.role;
+        }
+        const userProfile = await UserProfile.findOne({ email: session.user.email });
+        if (userProfile) {
+          session.user.image = userProfile.image;
         }
       }
 

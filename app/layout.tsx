@@ -5,6 +5,8 @@ import Footer from "@components/Footer";
 import Head from "next/head";
 import ToastContainerComponent from "@components/ToastContainerComponent";
 import Provider from "@components/Provider";
+import { ThemeProvider } from "@components/ui/theme-provider";
+ 
 
 export const metadata: Metadata = {
   title: "NexiMeet",
@@ -27,15 +29,22 @@ export default function RootLayout({
         <Provider session={session}>
           {" "}
           {/* Pass the session prop to Provider */}
-          <div className="main">
-            <div className="gradient"></div>
-          </div>
-          <main className="app">
-            <ToastContainerComponent />
-            <Nav />
-            {children}
-            <Footer />
-          </main>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <div className="main">
+              <div className="gradient"></div>
+            </div>
+            <main className="app">
+              <ToastContainerComponent />
+              <Nav />
+              {children}
+              <Footer />
+            </main>
+          </ThemeProvider>
         </Provider>
       </body>
     </html>

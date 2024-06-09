@@ -6,6 +6,7 @@ const noteSchema = new mongoose.Schema(
     userName: { type: String, required: true },
     userEmail: { type: String, required: true },
     date: { type: Date, required: true },
+    time: { type: String, required: true, default: "10:00" },
     text: { type: String, required: true },
   },
   { timestamps: true }

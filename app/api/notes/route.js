@@ -5,9 +5,9 @@ export async function POST(req) {
   try {
     await connectDB();
 
-    const { user, userName, userEmail, date, text } = await req.json();
+    const { user, userName, userEmail, date, time, text } = await req.json();
 
-    if (!user || !userName || !userEmail || !date || !text) {
+    if (!user || !userName || !userEmail || !date || !time || !text) {
       console.log("POST request: Missing required fields");
       return new Response(
         JSON.stringify({ message: "All fields are required" }),
@@ -20,6 +20,7 @@ export async function POST(req) {
       userName,
       userEmail,
       date,
+      time,
       text,
     });
     console.log("New note object:", newNote);

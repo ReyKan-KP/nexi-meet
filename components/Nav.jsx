@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { useSession, signOut } from "next-auth/react";
+// import { ModeToggle } from "@components/ui/toggleTheme";
 
 const Nav = () => {
   const { data: session, status } = useSession();
@@ -174,6 +175,7 @@ const Nav = () => {
         <button className="px-4 py-2 bg-gradient-to-br from-custom-start to-custom-end text-white rounded-lg">
           Meet an Event Planner
         </button>
+        {/* <ModeToggle /> */}
         {session && (
           <Link
             href="/profile"
