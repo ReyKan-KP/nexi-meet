@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import { useSession, signOut } from "next-auth/react";
 
 const Nav = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [toggleDropdown, setToggleDropdown] = useState(false);
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -30,6 +30,28 @@ const Nav = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const [userImage, setUserImage] = useState("/images/user1.png");
+  useEffect(() => {
+    if (status === "authenticated" && session?.user) {
+      const userId = session?.user?.id;
+
+      const fetchUserProfile = async () => {
+        try {
+          const response = await fetch(`/api/updateProfile?id=${userId}`);
+          if (!response.ok) {
+            throw new Error("Failed to fetch user profile");
+          }
+          const data = await response.json();
+          setUserImage(data.image);
+        } catch (error) {
+          console.error("Error fetching user profile:", error);
+        }
+      };
+
+      fetchUserProfile();
+    }
+  }, [status, session]);
 
   const handleSideMenuToggle = () => {
     setIsSideMenuOpen(!isSideMenuOpen);
@@ -158,10 +180,10 @@ const Nav = () => {
             className="text-gray-700 no-underline hover:text-blue-400 flex items-center"
           >
             <Image
-              src="/images/user1.png"
+              src={userImage}
               alt="Profile Picture"
-              width={70}
-              height={70}
+              width={50}
+              height={50}
               className="rounded-full"
             />
           </Link>
@@ -199,7 +221,7 @@ const Nav = () => {
               onClick={handleSideMenuToggle}
             >
               <Image
-                src={session.user.image || "/images/user1.png"}
+                src={userImage}
                 alt="Profile Picture"
                 width={80}
                 height={80}

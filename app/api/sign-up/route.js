@@ -1,3 +1,4 @@
+// /api/sign-up.js
 import User from "@models/user";
 import UserProfile from "@models/UserProfile";
 import bcrypt from "bcryptjs";
@@ -10,9 +11,9 @@ dotenv.config();
 export const POST = async (request) => {
   const { name, role, email, password } = await request.json();
 
-  if (!name || !role || !email || !password) {
+  if (!name || !role || !email) {
     return new Response(
-      JSON.stringify({ message: "All fields are required" }),
+      JSON.stringify({ message: "Name, role, and email are required" }),
       { status: 400 }
     );
   }
@@ -27,8 +28,11 @@ export const POST = async (request) => {
       });
     }
 
-    const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS, 10);
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    let hashedPassword = "";
+    if (password) {
+      const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS, 10);
+      hashedPassword = await bcrypt.hash(password, saltRounds);
+    }
 
     const newUser = new User({
       name,

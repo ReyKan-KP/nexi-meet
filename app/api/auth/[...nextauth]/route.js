@@ -1,83 +1,139 @@
-// app/api/auth/[...nextauth]/route.js
 import NextAuth from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
+import UserProfile from "@models/UserProfile";
 import User from "@models/user";
-import connectDB from "@utils/database";
+import connectToDB from "@utils/database";
+import bcrypt from "bcryptjs";
 
-const options = {
+const handler = NextAuth({
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email" },
+        email: {
+          label: "Email",
+          type: "email",
+          placeholder: "example@example.com",
+        },
         password: { label: "Password", type: "password" },
-        role: { label: "Role", type: "text" },
-        name: { label: "Name", type: "text" },
-        // id: { label: "ID", type: "text" },
       },
       async authorize(credentials) {
-        await connectDB();
+        await connectToDB();
 
-        const { email, password, role } = credentials;
-
-        const user = await User.findOne({ email });
-
+        const user = await User.findOne({ email: credentials.email });
         if (!user) {
-          throw new Error("Invalid email or password");
+          throw new Error("No user found with this email");
         }
 
-        if (user.role !== role) {
-          throw new Error("Role mismatch");
+        const isValidPassword = await bcrypt.compare(
+          credentials.password,
+          user.password
+        );
+        if (!isValidPassword) {
+          throw new Error("Invalid password");
         }
 
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-
-        if (!isPasswordValid) {
-          throw new Error("Invalid email or password");
-        }
-
-        // Include the user's name in the returned user object
         return {
           id: user._id,
+          name: user.name,
           email: user.email,
           role: user.role,
-          name: user.name,
         };
       },
     }),
   ],
-  session: {
-    jwt: true,
-  },
-  jwt: {
-    secret: process.env.JWT_SECRET,
+  callbacks: {
+    async session({ session, token }) {
+      if (token) {
+        session.user.id = token.id;
+        session.user.role = token.role;
+      }
+
+      // Update session for GoogleProvider if necessary
+      if (token.provider === "google") {
+        await connectToDB();
+
+        const user = await User.findOne({ email: session.user.email });
+        if (user) {
+          session.user.id = user._id;
+          session.user.role = user.role;
+        }
+      }
+
+      return session;
+    },
+    async jwt({ token, user, account }) {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
+      }
+
+      if (account && account.provider) {
+        token.provider = account.provider;
+      }
+
+      return token;
+    },
+    async signIn({ account, profile }) {
+      await connectToDB();
+
+      if (account.provider === "google") {
+        const userExists = await User.findOne({ email: profile.email });
+
+        if (!userExists) {
+          const newUser = await User.create({
+            email: profile.email,
+            name: profile.name,
+            role: "attendee",
+            password: "",
+          });
+
+          const newUserProfile = new UserProfile({
+            user: newUser._id,
+            name: profile.name,
+            email: profile.email,
+            phoneNumber: "",
+            bio: "",
+            image: profile.picture,
+            profileVisibility: "Public",
+          });
+
+          await newUserProfile.save();
+        } else {
+          const userProfileExists = await UserProfile.findOne({
+            email: profile.email,
+          });
+
+          if (!userProfileExists) {
+            const newUserProfile = new UserProfile({
+              user: userExists._id,
+              name: profile.name,
+              email: profile.email,
+              phoneNumber: "",
+              bio: "",
+              image: profile.picture,
+              profileVisibility: "Public",
+            });
+
+            await newUserProfile.save();
+          }
+        }
+      }
+
+      return true;
+    },
+    async redirect({ url, baseUrl }) {
+      return `${baseUrl}/profile`;
+    },
   },
   pages: {
     signIn: "/sign-in",
   },
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-        token.role = user.role;
-        token.name = user.name; // Add name to token
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      session.user.id = token.id;
-      session.user.role = token.role;
-      session.user.name = token.name; // Add name to session
-      return session;
-    },
-  },
-};
+});
 
-export const GET = async (req, res) => {
-  return NextAuth(req, res, options);
-};
-
-export const POST = async (req, res) => {
-  return NextAuth(req, res, options);
-};
+export { handler as GET, handler as POST };

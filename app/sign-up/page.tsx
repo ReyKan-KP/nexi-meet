@@ -6,6 +6,7 @@ import { ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { toast, ToastContainer } from "react-toastify";
+import { signIn } from "next-auth/react";
 
 const SignUp: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -15,6 +16,14 @@ const SignUp: React.FC = () => {
     password: "",
     confirmPassword: "",
   });
+    const handleGoogleSignIn = async () => {
+      const result = await signIn("google", { redirect: false });
+
+      if (result?.error) {
+        toast.error(result.error);
+      }
+      router.push("/profile");
+    };
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -237,6 +246,7 @@ const SignUp: React.FC = () => {
               <button
                 type="button"
                 className="relative inline-flex w-full items-center justify-center rounded-md border border-gray-400 bg-white px-3.5 py-2.5 font-semibold text-gray-700 transition-all duration-200 hover:bg-gray-100 hover:text-black focus:bg-gray-100 focus:text-black focus:outline-none"
+                onClick={handleGoogleSignIn}
               >
                 <span className="mr-2 inline-block">
                   <svg
