@@ -31,7 +31,7 @@ export default function RootLayout({
           {/* Pass the session prop to Provider */}
           <ThemeProvider
             attribute="class"
-            defaultTheme="system"
+            defaultTheme="light"
             enableSystem
             disableTransitionOnChange
           >
