@@ -22,7 +22,7 @@ const SignUp: React.FC = () => {
       if (result?.error) {
         toast.error(result.error);
       }
-      router.push("/profile");
+      // router.push("/profile");
     };
 
   const [showPassword, setShowPassword] = useState(false);

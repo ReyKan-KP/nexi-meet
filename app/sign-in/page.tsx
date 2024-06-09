@@ -39,7 +39,7 @@ const SignIn: React.FC = () => {
     // else {
     //   toast.success("Sign in successful");
     // }
-    router.push("/profile");
+    // router.push("/profile");
   };
 
   return (

@@ -128,7 +128,7 @@ const handler = NextAuth({
       return true;
     },
     async redirect({ url, baseUrl }) {
-      return `${baseUrl}/profile`;
+      return `/`;
     },
   },
   pages: {
