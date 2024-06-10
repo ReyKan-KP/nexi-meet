@@ -68,7 +68,9 @@ const handler = NextAuth({
           session.user.id = user._id;
           session.user.role = user.role;
         }
-        const userProfile = await UserProfile.findOne({ email: session.user.email });
+        const userProfile = await UserProfile.findOne({
+          email: session.user.email,
+        });
         if (userProfile) {
           session.user.image = userProfile.image;
         }
@@ -133,11 +135,13 @@ const handler = NextAuth({
           }
         }
       }
-
       return true;
     },
-    async redirect({ url, baseUrl }) {
-      return `/`;
+    async redirect({ url, baseUrl, account }) {
+      if (account?.provider === "google") {
+        return `${baseUrl}/`;
+      }
+      return baseUrl;
     },
   },
   pages: {

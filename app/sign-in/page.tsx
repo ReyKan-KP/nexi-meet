@@ -26,7 +26,7 @@ const SignIn: React.FC = () => {
       toast.error(result.error);
     } else {
       toast.success("Sign in successful");
-      router.push("/profile");
+      router.push("/");
     }
   };
 
