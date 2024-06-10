@@ -5,7 +5,13 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { format } from "date-fns";
 import { useSession } from "next-auth/react";
-import { Pencil, Trash2, ArrowUp, ArrowDown } from "lucide-react";
+import {
+  Pencil,
+  Trash2,
+  ArrowUp,
+  ArrowDown,
+  X
+} from "lucide-react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
@@ -15,12 +21,22 @@ import {
 } from "@components/ui/hover-card";
 import Image from "next/image";
 import "react-time-picker/dist/TimePicker.css";
-
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
-import { X } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 
 interface Note {
   _id: string;
@@ -40,6 +56,7 @@ const CalendarWithNotes: React.FC = () => {
   const [noteText, setNoteText] = useState<string>("");
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [noteToDelete, setNoteToDelete] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -91,65 +108,77 @@ const CalendarWithNotes: React.FC = () => {
     );
   };
 
-  const addOrEditNote = async () => {
-    if (noteText.trim() === "") return;
+const addOrEditNote = async () => {
+  if (noteText.trim() === "") return;
 
-    const userId = session?.user?.id;
-    const userName = session?.user?.name;
-    const userEmail = session?.user?.email;
+  const userId = session?.user?.id;
+  const userName = session?.user?.name;
+  const userEmail = session?.user?.email;
 
-    const noteData = {
-      user: userId,
-      userName: userName,
-      userEmail: userEmail,
-      date: value,
-      time: time?.format("HH:mm") ?? "10:00",
-      text: noteText,
-    };
-
-    try {
-      const response = await fetch("/api/notes", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(noteData),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to save note");
-      }
-
-      const savedNote = await response.json();
-
-      if (editIndex !== null) {
-        const updatedNotes = [...notes];
-        updatedNotes[editIndex] = {
-          ...savedNote.note,
-          date: new Date(savedNote.note.date),
-        };
-        setNotes(updatedNotes);
-        setEditIndex(null);
-        displayCustomToast("Note has been updated", savedNote.note.date);
-      } else {
-        setNotes([
-          ...notes,
-          { ...savedNote.note, date: new Date(savedNote.note.date) },
-        ]);
-        displayCustomToast("Scheduled: Catch up ", noteData.date);
-      }
-
-      setNoteText("");
-      setTime(dayjs("10:00", "HH:mm"));
-    } catch (error) {
-      console.error("Error saving note:", error);
-      toast.error("Error saving note: " + error);
-    }
+  const noteData = {
+    user: userId,
+    userName: userName,
+    userEmail: userEmail,
+    date: value,
+    time: time?.format("HH:mm") ?? "10:00",
+    text: noteText,
+    _id: editIndex !== null ? notes[editIndex]._id : undefined,
   };
 
-  const deleteNote = async (noteId: string) => {
+  if (editIndex !== null) {
+    noteData._id = notes[editIndex]._id;
+  }
+
+  try {
+    const response = await fetch("/api/notes", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(noteData),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to save note");
+    }
+
+    const savedNote = await response.json();
+
+    if (editIndex !== null) {
+      const updatedNotes = [...notes];
+      updatedNotes[editIndex] = {
+        ...savedNote.note,
+        date: new Date(savedNote.note.date),
+      };
+      setNotes(updatedNotes);
+      setEditIndex(null);
+      displayCustomToast("Note has been updated", savedNote.note.date);
+    } else {
+      setNotes([
+        ...notes,
+        { ...savedNote.note, date: new Date(savedNote.note.date) },
+      ]);
+      displayCustomToast("Scheduled: Catch up ", noteData.date);
+    }
+
+    setNoteText("");
+    setTime(dayjs("10:00", "HH:mm"));
+  } catch (error) {
+    console.error("Error saving note:", error);
+    toast.error("Error saving note: " + error);
+  }
+};
+
+
+  const confirmDeleteNote = (noteId: string) => {
+    setNoteToDelete(noteId);
+  };
+
+  const deleteNote = async () => {
+    if (!noteToDelete) return;
+
     try {
-      const response = await fetch(`/api/notes/${noteId}`, {
+      const response = await fetch(`/api/notes/${noteToDelete}`, {
         method: "DELETE",
       });
 
@@ -157,8 +186,9 @@ const CalendarWithNotes: React.FC = () => {
         throw new Error("Failed to delete note");
       }
 
-      setNotes(notes.filter((note) => note._id !== noteId));
-      displayCustomToast("Note has been deleted", new Date());
+      setNotes(notes.filter((note) => note._id !== noteToDelete));
+      toast.success("Note has been deleted");
+      setNoteToDelete(null);
     } catch (error) {
       console.error("Error deleting note:", error);
       toast.error("Error deleting note: " + error);
@@ -340,15 +370,48 @@ const CalendarWithNotes: React.FC = () => {
                       >
                         {editIndex === index ? <X /> : <Pencil />}
                       </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          deleteNote(note._id);
-                        }}
-                        className="text-red-500 hover:text-red-700"
-                      >
-                        <Trash2 />
-                      </button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              confirmDeleteNote(note._id);
+                            }}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <Trash2 />
+                          </button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="bg-gray-100 rounded-lg p-4 shadow-lg">
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Are you sure you want to delete this note?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel asChild>
+                              <button
+                                className="p-2 rounded focus:outline-none focus:ring-2 focus:ring-teal-600"
+                                title="Cancel"
+                              >
+                                <X className="text-green-500"/>
+                              </button>
+                            </AlertDialogCancel>
+                            <AlertDialogAction asChild>
+                              <button
+                                onClick={deleteNote}
+                                className="p-2 rounded focus:outline-none focus:ring-2 focus:ring-teal-600"
+                                title="Delete"
+                              >
+                                <Trash2 className=" text-red-500" />
+                              </button>
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </td>
                   </tr>
                 ))}

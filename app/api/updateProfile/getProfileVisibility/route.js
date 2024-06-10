@@ -1,3 +1,4 @@
+// app/api/updateProfile/getProfileVisibility/route.js
 import UserProfile from "@models/UserProfile";
 import connectDB from "@utils/database";
 

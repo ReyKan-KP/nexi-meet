@@ -1,11 +1,14 @@
+//app/api/notes/route.js
 import Note from "@models/Note";
 import connectDB from "@utils/database";
+
 
 export async function POST(req) {
   try {
     await connectDB();
 
-    const { user, userName, userEmail, date, time, text } = await req.json();
+    const { user, userName, userEmail, date, time, text, _id } =
+      await req.json();
 
     if (!user || !userName || !userEmail || !date || !time || !text) {
       console.log("POST request: Missing required fields");
@@ -15,22 +18,29 @@ export async function POST(req) {
       );
     }
 
-    const newNote = new Note({
-      user,
-      userName,
-      userEmail,
-      date,
-      time,
-      text,
-    });
-    console.log("New note object:", newNote);
-
-    await newNote.save();
+    let note;
+    if (_id) {
+      note = await Note.findByIdAndUpdate(
+        _id,
+        { user, userName, userEmail, date, time, text },
+        { new: true }
+      );
+    } else {
+      note = new Note({
+        user,
+        userName,
+        userEmail,
+        date,
+        time,
+        text,
+      });
+      await note.save();
+    }
 
     console.log("Note saved successfully");
 
     return new Response(
-      JSON.stringify({ message: "Note created successfully", note: newNote }),
+      JSON.stringify({ message: "Note created successfully", note }),
       { status: 201 }
     );
   } catch (error) {
