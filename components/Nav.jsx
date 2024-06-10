@@ -182,7 +182,7 @@ const Nav = () => {
             className="text-gray-700 no-underline hover:text-blue-400 flex items-center"
           >
             <Image
-              src={userImage}
+              src={userImage || "/images/user1.png"}
               alt="Profile Picture"
               width={50}
               height={50}
@@ -223,7 +223,7 @@ const Nav = () => {
               onClick={handleSideMenuToggle}
             >
               <Image
-                src={userImage}
+                src={userImage || "/images/user1.png"}
                 alt="Profile Picture"
                 width={80}
                 height={80}
