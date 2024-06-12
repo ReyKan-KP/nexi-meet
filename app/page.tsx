@@ -1,6 +1,6 @@
 "use client"
 import Image from "next/image";
-// import "@styles/Landingpage.css";
+
 import { useEffect } from "react";
 export default function Home() {
   useEffect(() => {

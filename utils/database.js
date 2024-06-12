@@ -10,9 +10,7 @@ const connectDB = async () => {
 
   try {
       await mongoose.connect(process.env.MONGO_URI, {
-        dbName: "nexi-meet",
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
+        dbName: "nexi-meet"
       });
     console.log("Connected to MongoDB");
   } catch (error) {

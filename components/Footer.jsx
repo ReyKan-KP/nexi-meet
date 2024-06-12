@@ -1,5 +1,9 @@
+"use client"
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import ScrollToTop from "react-scroll-to-top";
+import { ChevronUp } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -74,6 +78,25 @@ const Footer = () => {
           </div>
         </div>
       </div>
+      <ScrollToTop
+        smooth
+        top={50}
+        component={<ChevronUp size={24} color="white" />}
+        style={{
+          right: "20px",
+          bottom: "20px",
+          borderRadius: "50%",
+          backgroundColor: "#007BFF",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+          border: "none",
+          width: "50px",
+          height: "50px",
+          zIndex: 1000,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      />
     </footer>
   );
 };

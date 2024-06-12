@@ -1,12 +1,12 @@
+
 import type { Metadata } from "next";
 import "@styles/globals.css";
 import Nav from "@components/Nav";
 import Footer from "@components/Footer";
-import Head from "next/head";
 import ToastContainerComponent from "@components/ToastContainerComponent";
 import Provider from "@components/Provider";
+
 import { ThemeProvider } from "@components/ui/theme-provider";
- 
 
 export const metadata: Metadata = {
   title: "NexiMeet",

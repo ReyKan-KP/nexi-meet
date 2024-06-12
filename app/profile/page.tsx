@@ -1,32 +1,58 @@
 "use client";
 
-import * as React from "react";
-import { useState, useEffect } from "react";
+import { lazy, Suspense, useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import Box from "@mui/material/Box";
 import Badge from "@mui/material/Badge";
 import IconButton from "@mui/material/IconButton";
 import { Bell } from "lucide-react";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
+import Loader from "@components/ui/Loader";
 
-import UserProfileForm from "@components/ProfileComponents/Settings/UserProfileForm";
-import PrivacySettings from "@components/ProfileComponents/Settings/PrivacySettings";
-import Notifications from "@components/ProfileComponents/Settings/Notifications";
-import AccountSecurity from "@components/ProfileComponents/Settings/AccountSecurity";
-import ConnectedApps from "@components/ProfileComponents/Settings/ConnectedApps";
-import ActivityLog from "@components/ProfileComponents/ActivityLog";
-import LinkedSocialAccounts from "@components/ProfileComponents/LinkedSocialAccounts";
-import CalendarWithNotes from "@components/ProfileComponents/CalendarWithNotes";
+const UserProfileForm = lazy(
+  () => import("@components/ProfileComponents/Settings/UserProfileForm")
+);
+const PrivacySettings = lazy(
+  () => import("@components/ProfileComponents/Settings/PrivacySettings")
+);
+const Notifications = lazy(
+  () => import("@components/ProfileComponents/Settings/Notifications")
+);
+const AccountSecurity = lazy(
+  () => import("@components/ProfileComponents/Settings/AccountSecurity")
+);
+const ConnectedApps = lazy(
+  () => import("@components/ProfileComponents/Settings/ConnectedApps")
+);
+const ActivityLog = lazy(
+  () => import("@components/ProfileComponents/ActivityLog")
+);
+const LinkedSocialAccounts = lazy(
+  () => import("@components/ProfileComponents/LinkedSocialAccounts")
+);
+const CalendarWithNotes = lazy(
+  () => import("@components/ProfileComponents/CalendarWithNotes")
+);
+const OrganizerSection = lazy(
+  () => import("@components/ProfileComponents/RoleSpecific/OrganizerSection")
+);
+const SpeakerSection = lazy(
+  () => import("@components/ProfileComponents/RoleSpecific/SpeakerSection")
+);
+const ExhibitorSection = lazy(
+  () => import("@components/ProfileComponents/RoleSpecific/ExhibitorSection")
+);
+const AttendeeSection = lazy(
+  () => import("@components/ProfileComponents/RoleSpecific/AttendeeSection")
+);
+const NotificationBell = lazy(
+  () => import("@components/ProfileComponents/NotificationBell")
+);
+
 // import UserDashboard from "@components/ProfileComponents/UserDashboard";
-import OrganizerSection from "@components/ProfileComponents/RoleSpecific/OrganizerSection";
-import SpeakerSection from "@components/ProfileComponents/RoleSpecific/SpeakerSection";
-import ExhibitorSection from "@components/ProfileComponents/RoleSpecific/ExhibitorSection";
-import AttendeeSection from "@components/ProfileComponents/RoleSpecific/AttendeeSection";
-import NotificationBell from "@components/ProfileComponents/NotificationBell";
 
 interface SessionData {
   user?: {
@@ -51,7 +77,7 @@ const MyProfile: React.FC = () => {
     status: "loading" | "authenticated" | "unauthenticated";
   };
   const router = useRouter();
-  const [selectedTab, setSelectedTab] = useState<string>("User Dashboard");
+  const [selectedTab, setSelectedTab] = useState<string>("Calendar");
   const [selectedSetting, setSelectedSetting] =
     useState<string>("UserProfileForm");
   const [userProfile, setUserProfile] = useState<{
@@ -109,9 +135,9 @@ const MyProfile: React.FC = () => {
     const upcomingNotes = notes.filter((note) => {
       const noteDate = new Date(note.date);
       return (
-        (noteDate.getTime() - now.getTime() <= 3600000 && noteDate > now) || // within 1 hour
-        (noteDate.getTime() - now.getTime() <= 86400000 && noteDate > now) || // within 1 day
-        (noteDate.getTime() - now.getTime() <= 300000 && noteDate > now) // within 5 minutes
+        (noteDate.getTime() - now.getTime() <= 3600000 && noteDate > now) ||
+        (noteDate.getTime() - now.getTime() <= 86400000 && noteDate > now) ||
+        (noteDate.getTime() - now.getTime() <= 300000 && noteDate > now)
       );
     });
 
@@ -138,14 +164,11 @@ const MyProfile: React.FC = () => {
 
   if (status === "loading") {
     return (
-      <div className="flex justify-center items-center h-screen">
-        Loading...
-      </div>
+        <Loader color="#36d7b7" />
     );
   }
 
   const tabs = [
-    // "User Dashboard",
     "Calendar",
     "Role-Specific",
     "Activity Log",
@@ -160,15 +183,35 @@ const MyProfile: React.FC = () => {
   const renderSettingsContent = () => {
     switch (selectedSetting) {
       case "UserProfileForm":
-        return <UserProfileForm />;
+        return (
+          <Suspense fallback={<Loader color="#36d7b7" />}>
+            <UserProfileForm />
+          </Suspense>
+        );
       case "PrivacySettings":
-        return <PrivacySettings />;
+        return (
+          <Suspense fallback={<Loader color="#36d7b7" />}>
+            <PrivacySettings />
+          </Suspense>
+        );
       case "Notifications":
-        return <Notifications />;
+        return (
+          <Suspense fallback={<Loader color="#36d7b7" />}>
+            <Notifications />
+          </Suspense>
+        );
       case "AccountSecurity":
-        return <AccountSecurity />;
+        return (
+          <Suspense fallback={<Loader color="#36d7b7" />}>
+            <AccountSecurity />
+          </Suspense>
+        );
       case "ConnectedApps":
-        return <ConnectedApps />;
+        return (
+          <Suspense fallback={<Loader color="#36d7b7" />}>
+            <ConnectedApps />
+          </Suspense>
+        );
       default:
         return null;
     }
@@ -194,7 +237,7 @@ const MyProfile: React.FC = () => {
               <p className="text-gray-600">Visibility: {profileVisibility}</p>
               <p className="text-gray-600">Bio: {bio}</p>
             </div>
-            <div className="flex justify-end ">
+            <div className="flex justify-end md:ml-auto">
               <ClickAwayListener onClickAway={handleClickAway}>
                 <div className="relative">
                   <IconButton color="inherit" onClick={handleBellClick}>
@@ -203,10 +246,12 @@ const MyProfile: React.FC = () => {
                     </Badge>
                   </IconButton>
                   {isBellOpen && (
-                    <NotificationBell
-                      notifications={notes}
-                      markAsRead={markAsRead}
-                    />
+                    <Suspense fallback={<Loader color="#36d7b7" />}>
+                      <NotificationBell
+                        notifications={notes}
+                        markAsRead={markAsRead}
+                      />
+                    </Suspense>
                   )}
                 </div>
               </ClickAwayListener>
@@ -214,28 +259,37 @@ const MyProfile: React.FC = () => {
           </div>
         </div>
         <div className="mt-6">
-          {/* <Box sx={{ overflowX: "auto" }}> */}
           <Tabs
             value={selectedTab}
             onChange={handleChange}
             centered
             className="justify-center"
-            variant="scrollable"
-            scrollButtons="auto"
-            allowScrollButtonsMobile
+            variant="fullWidth"
           >
             {tabs.map((tab) => (
               <Tab key={tab} label={tab} value={tab} />
             ))}
           </Tabs>
-          {/* </Box> */}
-          {/* {selectedTab === "User Dashboard" && <UserDashboard />} */}
-          {selectedTab === "Calendar" && <CalendarWithNotes />}
-          {selectedTab === "Role-Specific" && (
-            <RoleSpecific role={session?.user?.role} />
+          {selectedTab === "Calendar" && (
+            <Suspense fallback={<Loader color="#36d7b7" />}>
+              <CalendarWithNotes />
+            </Suspense>
           )}
-          {selectedTab === "Activity Log" && <ActivityLog />}
-          {selectedTab === "Linked Social Accounts" && <LinkedSocialAccounts />}
+          {selectedTab === "Role-Specific" && (
+            <Suspense fallback={<Loader color="#36d7b7" />}>
+              <RoleSpecific role={session?.user?.role} />
+            </Suspense>
+          )}
+          {selectedTab === "Activity Log" && (
+            <Suspense fallback={<Loader color="#36d7b7" />}>
+              <ActivityLog />
+            </Suspense>
+          )}
+          {selectedTab === "Linked Social Accounts" && (
+            <Suspense fallback={<Loader color="#36d7b7" />}>
+              <LinkedSocialAccounts />
+            </Suspense>
+          )}
           {selectedTab === "Settings" && (
             <div className="mt-4 flex flex-row">
               <div className="flex-none w-1/4 p-4">
@@ -261,7 +315,7 @@ const MyProfile: React.FC = () => {
                           : "text-gray-700"
                       }`}
                     >
-                      Privacy Settings
+                      Privacy
                     </button>
                   </li>
                   <li>
@@ -311,24 +365,40 @@ const MyProfile: React.FC = () => {
   );
 };
 
-const RoleSpecific: React.FC<{ role?: string }> = ({ role }) => {
+interface RoleSpecificProps {
+  role?: string;
+}
+
+const RoleSpecific: React.FC<RoleSpecificProps> = ({ role }) => {
   switch (role) {
     case "organizer":
-      return <OrganizerSection />;
+      return (
+        <Suspense fallback={<Loader color="#36d7b7" />}>
+          <OrganizerSection />
+        </Suspense>
+      );
     case "speaker":
-      return <SpeakerSection />;
+      return (
+        <Suspense fallback={<Loader color="#36d7b7" />}>
+          <SpeakerSection />
+        </Suspense>
+      );
     case "exhibitor":
-      return <ExhibitorSection />;
+      return (
+        <Suspense fallback={<Loader color="#36d7b7" />}>
+          <ExhibitorSection />
+        </Suspense>
+      );
     case "attendee":
-      return <AttendeeSection />;
+      return (
+        <Suspense fallback={<Loader color="#36d7b7" />}>
+          <AttendeeSection />
+        </Suspense>
+      );
     default:
       return null;
   }
 };
-
-
-
-
 
 
 export default MyProfile;
