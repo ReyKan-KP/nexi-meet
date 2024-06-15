@@ -327,7 +327,7 @@ const addOrEditNote = async () => {
                 <tr>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider "
                   >
                     Date
                   </th>
@@ -348,10 +348,14 @@ const addOrEditNote = async () => {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white divide-y divide-gray-200  ">
                 {sortedNotes.map((note, index) => (
-                  <tr key={note._id} onClick={() => handleDateClick(note.date)}>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                  <tr
+                    key={note._id}
+                    onClick={() => handleDateClick(note.date)}
+                    className="hover:bg-gray-50 cursor-pointer"
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap ">
                       {format(note.date, "MMMM d, yyyy")}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">{note.time}</td>
@@ -397,7 +401,7 @@ const addOrEditNote = async () => {
                                 className="p-2 rounded focus:outline-none focus:ring-2 focus:ring-teal-600"
                                 title="Cancel"
                               >
-                                <X className="text-green-500"/>
+                                <X className="text-green-500" />
                               </button>
                             </AlertDialogCancel>
                             <AlertDialogAction asChild>

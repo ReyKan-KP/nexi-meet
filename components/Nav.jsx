@@ -1,3 +1,4 @@
+//components/Nav.jsx
 "use client";
 import Link from "next/link";
 import Image from "next/image";
@@ -141,10 +142,10 @@ const Nav = () => {
           )}
         </div>
         <Link
-          href="#"
+          href="/virtualMeetHome"
           className="text-gray-700 no-underline hover:text-blue-400"
         >
-          Features
+          Get Started
         </Link>
         {session ? (
           <button
@@ -284,10 +285,10 @@ const Nav = () => {
             )}
           </div>
           <Link
-            href="#"
+            href="/virtualMeetHome"
             className="text-white no-underline hover:text-blue-400 mb-4"
           >
-            Features
+            Get Started
           </Link>
           {session ? (
             <>
