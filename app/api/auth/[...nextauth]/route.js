@@ -1,3 +1,4 @@
+// app\api\auth\[...nextauth]\route.js
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -6,7 +7,7 @@ import User from "@models/user";
 import connectToDB from "@utils/database";
 import bcrypt from "bcryptjs";
 
-const handler = NextAuth({
+export const authOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -147,6 +148,8 @@ const handler = NextAuth({
   pages: {
     signIn: "/sign-in",
   },
-});
+};
+
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };
