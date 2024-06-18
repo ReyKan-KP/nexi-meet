@@ -1,4 +1,4 @@
-import MeetingTypeList from "@components/MeetingTypeList";
+import MeetingTypeList from "@components/VirtualMeetComponents/MeetingTypeList";
 
 const VirtualMeetHome = () => {
   const now = new Date();

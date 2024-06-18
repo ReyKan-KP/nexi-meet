@@ -1,15 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import HomeCard from "./HomeCard";
+import HomeCard from "@components/VirtualMeetComponents/HomeCard";
 import { useRouter } from "next/navigation";
-import MeetingModel from "@components/MeetingModel";
+import MeetingModel from "@components/VirtualMeetComponents/MeetingModel";
 import { Call, useStreamVideoClient } from "@stream-io/video-react-sdk";
 import { useSession } from "next-auth/react";
 import Loader from "@components/ui/Loader";
-import { Textarea } from "./ui/textarea";
+import { Textarea } from "@components/ui/textarea";
 import ReactDatePicker from "react-datepicker";
-import { Input } from "./ui/input";
+import { Input } from "@components/ui/input";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 

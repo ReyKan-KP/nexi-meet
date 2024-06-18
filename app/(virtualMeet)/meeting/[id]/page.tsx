@@ -8,8 +8,8 @@ import { Loader } from "lucide-react";
 
 import { useGetCallById } from "@hooks/useGetCallById";
 import Alert from "@components/ui/Alert";
-import MeetingSetup from "@/components/MeetingSetup";
-import MeetingRoom from "@/components/MeetingRoom";
+import MeetingSetup from "@/components/VirtualMeetComponents/MeetingSetup";
+import MeetingRoom from "@/components/VirtualMeetComponents/MeetingRoom";
 
 const MeetingPage = () => {
   const { id } = useParams();

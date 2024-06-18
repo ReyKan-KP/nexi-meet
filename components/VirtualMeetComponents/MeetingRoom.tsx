@@ -20,7 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@components/ui/dropdown-menu";
 import Loader from "@components/ui/Loader";
-import EndCallButton from "@components/EndCallButton";
+import EndCallButton from "@components/VirtualMeetComponents/EndCallButton";
 import { cn } from "@lib/utils";
 
 type CallLayoutType = "grid" | "speaker-left" | "speaker-right";

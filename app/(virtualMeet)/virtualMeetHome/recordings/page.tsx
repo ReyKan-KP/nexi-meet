@@ -1,4 +1,4 @@
-import CallList from "@/components/CallList";
+import CallList from "@components/VirtualMeetComponents/CallList";
 
 const PreviousPage = () => {
   return (
