@@ -20,6 +20,8 @@ export default function RootLayout({
         <link rel="icon" href="/images/favicon.ico" />
       </Head>
       <body>
+      <script defer src="https://app.fastbots.ai/embed.js" data-bot-id="clxnpy2ix00iyr9bc4wxgrbcd"></script>
+
         {/* <Provider> */}
         <div className="main">
           <div className="gradient"></div>
