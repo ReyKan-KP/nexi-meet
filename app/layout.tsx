@@ -15,10 +15,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-  session, // Add the session prop here
+  session,
 }: Readonly<{
   children: React.ReactNode;
-  session: any; // Define the session prop
+  session: any;
 }>) {
   return (
     <html lang="en">
@@ -28,7 +28,11 @@ export default function RootLayout({
       <body>
         <Provider session={session}>
           {" "}
-          {/* Pass the session prop to Provider */}
+          <script
+            defer
+            src="https://app.fastbots.ai/embed.js"
+            data-bot-id="clxnpy2ix00iyr9bc4wxgrbcd"
+          ></script>
           <ThemeProvider
             attribute="class"
             defaultTheme="light"
