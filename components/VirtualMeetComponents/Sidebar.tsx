@@ -18,11 +18,11 @@ const Sidebar = () => {
   return (
     <section
       className={cn(
-        "sticky left-0 top-0 flex h-screen w-fit flex-col justify-between p-6 pt-28 max-sm:hidden lg:w-[264px]",
-        {
-          "bg-dark-1 text-white": isThemeMode === "dark",
-          "bg-light-1 text-black": isThemeMode === "light",
-        }
+        "sticky left-0 top-0 flex h-screen w-fit flex-col justify-between p-6 pt-28 max-sm:hidden lg:w-[264px] bg-teal-100",
+        // {
+        //   "bg-dark-1 text-white": isThemeMode === "dark",
+        //   "bg-light-1 text-black": isThemeMode === "light",
+        // }
       )}
     >
       {/* <button onClick={toggleMode} className="mb-4">
