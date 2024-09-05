@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { useSession, signOut } from "next-auth/react";
+import { usePathname } from "next/navigation";
 // import { ModeToggle } from "@components/ui/toggleTheme";
 
 const Nav = () => {
@@ -12,6 +13,13 @@ const Nav = () => {
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
   const sideMenuRef = useRef(null);
+
+  const handleGetStarted = (e) => {
+    if (!session) {
+      e.preventDefault();
+      window.location.href = "/sign-in";
+    }
+  };
 
   const handleDropdownClick = () => {
     setToggleDropdown(!toggleDropdown);
@@ -58,6 +66,13 @@ const Nav = () => {
   const handleSideMenuToggle = () => {
     setIsSideMenuOpen(!isSideMenuOpen);
   };
+
+  const pathname = usePathname();
+
+  // If the current path starts with /virtualMeetHome, don't render the Nav
+  if (pathname.startsWith("/virtualMeetHome")) {
+    return null;
+  }
 
   return (
     <nav className="flex items-center justify-between p-4 w-full bg-transparent relative">
@@ -142,10 +157,10 @@ const Nav = () => {
           )}
         </div>
         <Link
-          href="/virtualMeetHome"
+          href="/contact-us"
           className="text-gray-700 no-underline hover:text-blue-400"
         >
-          Get Started
+          Contact Us
         </Link>
         {session ? (
           <button
@@ -170,12 +185,18 @@ const Nav = () => {
             </Link>
           </>
         )}
-        <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gradient-to-br from-custom-start to-custom-end hover:text-white">
+        {/* <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gradient-to-br from-custom-start to-custom-end hover:text-white">
           Request quote
-        </button>
-        <button className="px-4 py-2 bg-gradient-to-br from-custom-start to-custom-end text-white rounded-lg">
-          Meet an Event Planner
-        </button>
+        </button> */}
+
+        <Link href={session ? "/virtualMeetHome" : "/sign-in"}>
+          <button
+            className="px-4 py-2 bg-gradient-to-br from-custom-start to-custom-end text-white rounded-lg"
+            onClick={handleGetStarted}
+          >
+            Get Started
+          </button>
+        </Link>
         {/* <ModeToggle /> */}
         {session && (
           <Link
@@ -285,10 +306,10 @@ const Nav = () => {
             )}
           </div>
           <Link
-            href="/virtualMeetHome"
+            href="/contact-us"
             className="text-white no-underline hover:text-blue-400 mb-4"
           >
-            Get Started
+            Contact Us
           </Link>
           {session ? (
             <>
@@ -328,12 +349,17 @@ const Nav = () => {
               </Link>
             </>
           )}
-          <button className="px-4 py-2 border border-white rounded text-white hover:bg-gradient-to-br from-custom-start to-custom-end hover:text-white mb-4">
+          {/* <button className="px-4 py-2 border border-white rounded text-white hover:bg-gradient-to-br from-custom-start to-custom-end hover:text-white mb-4">
             Request quote
-          </button>
-          <button className="px-4 py-2 bg-gradient-to-br from-custom-start to-custom-end text-white rounded mb-4">
-            Meet an Event Planner
-          </button>
+          </button> */}
+          <Link href={session ? "/virtualMeetHome" : "/sign-in"}>
+            <button
+              className="px-4 py-2 bg-gradient-to-br from-custom-start to-custom-end text-white rounded mb-4"
+              onClick={handleGetStarted}
+            >
+              Get Started
+            </button>
+          </Link>
         </div>
       )}
     </nav>
