@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import LandingPage from "@components/LandingPage";
+// import Hero from "@sections/Hero";
 
 import { useEffect } from "react";
 export default function Home() {
@@ -32,6 +33,7 @@ export default function Home() {
     //   </div>
     // </div>
     <>
+      {/* <Hero /> */}
       <LandingPage />
     </>
   );

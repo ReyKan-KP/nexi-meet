@@ -282,7 +282,7 @@ const SignUp: React.FC = () => {
         <div className="flex items-center justify-center h-full w-full bg-transparent">
           <Image
             className="mx-auto rounded-md object-cover"
-            src="/images/signup.png"
+            src="/images/signup.svg"
             alt="Sign up"
             width={1742}
             height={500}

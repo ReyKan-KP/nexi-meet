@@ -50,7 +50,7 @@ const SignIn: React.FC = () => {
           <div className="absolute inset-0 flex items-center justify-center h-full w-full bg-transparent">
             <Image
               className="mx-auto rounded-md object-cover"
-              src="/images/signup.png"
+              src="/images/login.svg"
               alt="Sign In"
               width={1742}
               height={500}
