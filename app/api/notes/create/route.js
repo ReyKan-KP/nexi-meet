@@ -4,12 +4,21 @@ import Note from "@models/Note";
 export async function POST(req) {
   try {
     await connectDB();
-    const { userId, userName, userEmail, date, time, text, link } = req.body;
+    const body = await req.json();
+    const { userId, userName, userEmail, date, time, text, link } = body;
+
+    if (!userId || !userName || !userEmail || !date || !time || !text) {
+      return new Response(
+        JSON.stringify({ message: "Missing required fields" }),
+        { status: 400 }
+      );
+    }
+
     const note = await Note.create({
       user: userId,
       userName,
       userEmail,
-      date,
+      date: new Date(date),
       time,
       text,
       link,

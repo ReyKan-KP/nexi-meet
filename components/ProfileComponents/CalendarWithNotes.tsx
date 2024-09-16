@@ -108,67 +108,66 @@ const CalendarWithNotes: React.FC = () => {
     );
   };
 
-const addOrEditNote = async () => {
-  if (noteText.trim() === "") return;
+  const addOrEditNote = async () => {
+    if (noteText.trim() === "") return;
 
-  const userId = session?.user?.id;
-  const userName = session?.user?.name;
-  const userEmail = session?.user?.email;
+    const userId = session?.user?.id;
+    const userName = session?.user?.name;
+    const userEmail = session?.user?.email;
 
-  const noteData = {
-    user: userId,
-    userName: userName,
-    userEmail: userEmail,
-    date: value,
-    time: time?.format("HH:mm") ?? "10:00",
-    text: noteText,
-    _id: editIndex !== null ? notes[editIndex]._id : undefined,
-  };
-
-  if (editIndex !== null) {
-    noteData._id = notes[editIndex]._id;
-  }
-
-  try {
-    const response = await fetch("/api/notes", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(noteData),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to save note");
-    }
-
-    const savedNote = await response.json();
+    const noteData = {
+      user: userId,
+      userName: userName,
+      userEmail: userEmail,
+      date: value,
+      time: time?.format("HH:mm") ?? "10:00",
+      text: noteText,
+      _id: editIndex !== null ? notes[editIndex]._id : undefined,
+    };
 
     if (editIndex !== null) {
-      const updatedNotes = [...notes];
-      updatedNotes[editIndex] = {
-        ...savedNote.note,
-        date: new Date(savedNote.note.date),
-      };
-      setNotes(updatedNotes);
-      setEditIndex(null);
-      displayCustomToast("Note has been updated", savedNote.note.date);
-    } else {
-      setNotes([
-        ...notes,
-        { ...savedNote.note, date: new Date(savedNote.note.date) },
-      ]);
-      displayCustomToast("Scheduled: Catch up ", noteData.date);
+      noteData._id = notes[editIndex]._id;
     }
 
-    setNoteText("");
-    setTime(dayjs("10:00", "HH:mm"));
-  } catch (error) {
-    console.error("Error saving note:", error);
-    toast.error("Error saving note: " + error);
-  }
-};
+    try {
+      const response = await fetch("/api/notes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(noteData),
+      });
 
+      if (!response.ok) {
+        throw new Error("Failed to save note");
+      }
+
+      const savedNote = await response.json();
+
+      if (editIndex !== null) {
+        const updatedNotes = [...notes];
+        updatedNotes[editIndex] = {
+          ...savedNote.note,
+          date: new Date(savedNote.note.date),
+        };
+        setNotes(updatedNotes);
+        setEditIndex(null);
+        displayCustomToast("Note has been updated", savedNote.note.date);
+      } else {
+        setNotes([
+          ...notes,
+          { ...savedNote.note, date: new Date(savedNote.note.date) },
+        ]);
+        displayCustomToast("Scheduled: Catch up ", noteData.date);
+      }
+
+      setNoteText("");
+      setTime(dayjs("10:00", "HH:mm"));
+    } catch (error) {
+      console.error("Error saving note:", error);
+      toast.error("Error saving note: " + error);
+    }
+  };
 
   const confirmDeleteNote = (noteId: string) => {
     setNoteToDelete(noteId);
@@ -227,200 +226,223 @@ const addOrEditNote = async () => {
   });
 
   return (
-    <div className="flex flex-col items-center p-4 sm:p-6 lg:p-8 relative">
-      <ToastContainer />
-      <div className="w-full lg:flex lg:space-x-8 mb-8">
-        <div className="w-full lg:w-1/2 mb-8 lg:mb-0">
-          <h2 className="text-2xl font-bold text-teal-600 mb-4">Calendar</h2>
-          <Calendar
-            onChange={(value) => setValue(value as Date)}
-            value={value}
-            activeStartDate={activeStartDate}
-            onActiveStartDateChange={({ activeStartDate }) =>
-              setActiveStartDate(activeStartDate || new Date())
-            }
-            className="calendar mb-4"
-            tileContent={({ date, view }) => {
-              if (view !== "month") return null;
-              const notesForDate = notes.filter(
-                (note) =>
-                  format(note.date, "yyyy-MM-dd") === format(date, "yyyy-MM-dd")
-              );
-              if (notesForDate.length === 0) return null;
-              notesForDate.sort((a, b) => a.time.localeCompare(b.time));
-              return (
-                <HoverCard>
-                  <HoverCardTrigger asChild>
-                    <p className="text-xs cursor-pointer">📝</p>
-                  </HoverCardTrigger>
-                  <HoverCardContent>
-                    <div className="flex items-center space-x-4 mb-2">
-                      <Image
-                        src={session?.user?.image ?? ""}
-                        alt={session?.user?.name ?? ""}
-                        className="w-10 h-10 rounded-full"
-                        width={40}
-                        height={40}
-                      />
-                      <div>
-                        <p className="text-sm font-semibold">
-                          {session?.user?.name}
-                        </p>
+    <div className="relative min-h-screen p-4 sm:p-6 lg:p-8 font-sans ">
+      <div className="relative z-10">
+        <ToastContainer />
+        <div className="w-full lg:flex lg:space-x-8 mb-8">
+          <div className="w-full lg:w-1/2 mb-8 lg:mb-0">
+            <h2 className="text-2xl font-bold text-[#564476] mb-4">Calendar</h2>
+            <Calendar
+              onChange={(value) => setValue(value as Date)}
+              value={value}
+              activeStartDate={activeStartDate}
+              onActiveStartDateChange={({ activeStartDate }) =>
+                setActiveStartDate(activeStartDate || new Date())
+              }
+              className="calendar mb-6 p-4  rounded-lg shadow-lg"
+              tileClassName={({ date, view }) =>
+                view === "month" &&
+                date.toDateString() === new Date().toDateString()
+                  ? "bg-[#fff4a4] text-[#564476] rounded-full"
+                  : ""
+              }
+              tileContent={({ date, view }) => {
+                if (view !== "month") return null;
+                const notesForDate = notes.filter(
+                  (note) =>
+                    format(note.date, "yyyy-MM-dd") ===
+                    format(date, "yyyy-MM-dd")
+                );
+                if (notesForDate.length === 0) return null;
+                notesForDate.sort((a, b) => a.time.localeCompare(b.time));
+                return (
+                  <HoverCard>
+                    <HoverCardTrigger asChild>
+                      <p className="text-xs cursor-pointer">📝</p>
+                    </HoverCardTrigger>
+                    <HoverCardContent className="bg-[#e0faf7] border-[#cee3fe]">
+                      <div className="flex items-center space-x-4 mb-2">
+                        <Image
+                          src={session?.user?.image ?? ""}
+                          alt={session?.user?.name ?? ""}
+                          className="w-10 h-10 rounded-full"
+                          width={40}
+                          height={40}
+                        />
+                        <div>
+                          <p className="text-sm font-semibold text-[#564476]">
+                            {session?.user?.name}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                    <ol className="list-decimal list-inside text-left px-14">
-                      {notesForDate.map((note, index) => (
-                        <li key={index}>
-                          <span className="text-s text-gray-500 text-left">
-                            {note.text} at {note.time}
-                          </span>
-                        </li>
-                      ))}
-                    </ol>
-                  </HoverCardContent>
-                </HoverCard>
-              );
-            }}
-          />
+                      <ol className="list-decimal list-inside text-left px-4">
+                        {notesForDate.map((note, index) => (
+                          <li key={index} className="text-[#564476]">
+                            <span className="text-s">
+                              {note.text} at {note.time}
+                            </span>
+                          </li>
+                        ))}
+                      </ol>
+                    </HoverCardContent>
+                  </HoverCard>
+                );
+              }}
+            />
 
-          <p className="text-gray-700 mb-4">
-            Selected Date: {format(value, "MMMM d, yyyy")}
-          </p>
-          <div>
-            <h3 className="text-md font-semibold text-teal-600 mb-2">
-              Select Time
-            </h3>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <TimePicker value={time} onChange={setTime} />
-            </LocalizationProvider>
-            <h3 className="text-md font-semibold text-teal-600 mb-2">
-              {editIndex !== null ? "Edit Note" : "Add Note"}
-            </h3>
-            <textarea
-              className="w-full rounded-md border border-teal-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 mb-2"
-              rows={3}
-              value={noteText}
-              onChange={(e) => setNoteText(e.target.value)}
-            ></textarea>
+            <p className="text-[#564476] mb-4">
+              Selected Date: {format(value, "MMMM d, yyyy")}
+            </p>
+            <div className="bg-white/70 p-4 rounded-lg shadow-md">
+              <h3 className="text-md font-semibold text-[#564476] mb-2">
+                Select Time
+              </h3>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <TimePicker
+                  value={time}
+                  onChange={setTime}
+                  className="mb-4 w-full"
+                />
+              </LocalizationProvider>
+              <h3 className="text-md font-semibold text-[#564476] mb-2">
+                {editIndex !== null ? "Edit Note" : "Add Note"}
+              </h3>
+              <textarea
+                className="w-full rounded-md border border-[#cee3fe] bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#f0e3ff] focus:ring-offset-2 mb-2 transition-all duration-300 ease-in-out"
+                rows={3}
+                value={noteText}
+                onChange={(e) => setNoteText(e.target.value)}
+                placeholder="Enter your note here..."
+              ></textarea>
 
-            <button
-              onClick={addOrEditNote}
-              className="inline-flex items-center justify-center rounded-md bg-teal-600 px-4 py-2 font-semibold text-white hover:bg-teal-700"
-            >
-              {editIndex !== null ? "Update Note" : "Add Note"}
-            </button>
+              <button
+                onClick={addOrEditNote}
+                className="inline-flex items-center justify-center rounded-md bg-[#f0e3ff] px-4 py-2 font-semibold text-[#564476] hover:bg-[#e0faf7] transition-all duration-300 ease-in-out transform hover:scale-105 shadow-md"
+              >
+                {editIndex !== null ? "Update Note" : "Add Note"}
+              </button>
+            </div>
           </div>
-        </div>
-        <div className="w-full lg:w-1/2">
-          <h2 className="text-2xl font-bold text-teal-600 mb-4 flex items-center">
-            Notes Table
-            <button
-              onClick={toggleSortOrder}
-              className="ml-2 text-teal-600 hover:text-teal-800"
-            >
-              {sortOrder === "asc" ? <ArrowUp /> : <ArrowDown />}
-            </button>
-          </h2>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider "
-                  >
-                    Date
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Time
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Note
-                  </th>
-                  <th scope="col" className="relative px-6 py-3">
-                    <span className="sr-only">Edit</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200  ">
-                {sortedNotes.map((note, index) => (
-                  <tr
-                    key={note._id}
-                    onClick={() => handleDateClick(note.date)}
-                    className="hover:bg-gray-50 cursor-pointer"
-                  >
-                    <td className="px-6 py-4 whitespace-nowrap ">
-                      {format(note.date, "MMMM d, yyyy")}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">{note.time}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{note.text}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEditNote(index);
-                        }}
-                        className={`text-${
-                          editIndex === index ? "red" : "teal"
-                        }-500 hover:text-${
-                          editIndex === index ? "red" : "teal"
-                        }-700`}
-                      >
-                        {editIndex === index ? <X /> : <Pencil />}
-                      </button>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
+          <div className="w-full lg:w-1/2">
+            <h2 className="text-2xl font-bold text-[#564476] mb-4 flex items-center">
+              Notes Table
+              <button
+                onClick={toggleSortOrder}
+                className="ml-2 text-[#564476] hover:text-[#f0e3ff] transition-colors duration-300"
+              >
+                {sortOrder === "asc" ? <ArrowUp /> : <ArrowDown />}
+              </button>
+            </h2>
+            <div className="bg-[#f0e3ff] rounded-lg shadow-lg overflow-x-auto">
+              <table className="w-full divide-y divide-[#cee3fe]">
+                <thead className="bg-[#e0faf7]">
+                  <tr>
+                    <th
+                      scope="col"
+                      className="px-3 sm:px-4 md:px-6 py-3 text-left text-xs font-medium text-[#564476] uppercase tracking-wider w-1/4 sm:w-1/5"
+                    >
+                      Date
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-3 sm:px-4 md:px-6 py-3 text-left text-xs font-medium text-[#564476] uppercase tracking-wider w-1/6 sm:w-1/6"
+                    >
+                      Time
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-3 sm:px-4 md:px-6 py-3 text-left text-xs font-medium text-[#564476] uppercase tracking-wider"
+                    >
+                      Note
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-3 sm:px-4 md:px-6 py-3 text-center text-xs font-medium text-[#564476] uppercase tracking-wider w-1/6 sm:w-1/8"
+                    >
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white/70 divide-y divide-[#cee3fe]">
+                  {sortedNotes.map((note, index) => (
+                    <tr
+                      key={note._id}
+                      onClick={() => handleDateClick(note.date)}
+                      className="hover:bg-[#d5fbe2] cursor-pointer transition-colors duration-300"
+                    >
+                      <td className="px-3 sm:px-4 md:px-6 py-4 whitespace-nowrap text-[#564476] text-sm">
+                        {format(note.date, "MMM d, yyyy")}
+                      </td>
+                      <td className="px-3 sm:px-4 md:px-6 py-4 whitespace-nowrap text-[#564476] text-sm">
+                        {note.time}
+                      </td>
+                      <td className="px-3 sm:px-4 md:px-6 py-4 text-[#564476] text-sm">
+                        <div className="truncate max-w-xs sm:max-w-sm md:max-w-md">
+                          {note.text}
+                        </div>
+                      </td>
+                      <td className="px-3 sm:px-4 md:px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div className="flex justify-center space-x-2">
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              confirmDeleteNote(note._id);
+                              handleEditNote(index);
                             }}
-                            className="text-red-500 hover:text-red-700"
+                            className={`text-${
+                              editIndex === index ? "[#fff4a4]" : "[#564476]"
+                            } hover:text-[#8d6ffa] transition-colors duration-300`}
                           >
-                            <Trash2 />
+                            {editIndex === index ? <X /> : <Pencil />}
                           </button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent className="bg-gray-100 rounded-lg p-4 shadow-lg">
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>
-                              Are you sure you want to delete this note?
-                            </AlertDialogTitle>
-                            <AlertDialogDescription>
-                              This action cannot be undone.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel asChild>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
                               <button
-                                className="p-2 rounded focus:outline-none focus:ring-2 focus:ring-teal-600"
-                                title="Cancel"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  confirmDeleteNote(note._id);
+                                }}
+                                className="text-[#564476] hover:text-[#ff0062] transition-colors duration-300"
                               >
-                                <X className="text-green-500" />
+                                <Trash2 />
                               </button>
-                            </AlertDialogCancel>
-                            <AlertDialogAction asChild>
-                              <button
-                                onClick={deleteNote}
-                                className="p-2 rounded focus:outline-none focus:ring-2 focus:ring-teal-600"
-                                title="Delete"
-                              >
-                                <Trash2 className=" text-red-500" />
-                              </button>
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent className="bg-[#e0faf7] rounded-lg p-4 shadow-lg">
+                              <AlertDialogHeader>
+                                <AlertDialogTitle className="text-[#564476]">
+                                  Are you sure you want to delete this note?
+                                </AlertDialogTitle>
+                                <AlertDialogDescription className="text-[#564476]">
+                                  This action cannot be undone.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel asChild>
+                                  <button
+                                    className="p-2 rounded focus:outline-none focus:ring-2 focus:ring-[#f0e3ff] transition-all duration-300 ease-in-out"
+                                    title="Cancel"
+                                  >
+                                    <X className="text-[#564476]" />
+                                  </button>
+                                </AlertDialogCancel>
+                                <AlertDialogAction asChild>
+                                  <button
+                                    onClick={deleteNote}
+                                    className="p-2 rounded focus:outline-none focus:ring-2 focus:ring-[#fff4a4] transition-all duration-300 ease-in-out"
+                                    title="Delete"
+                                  >
+                                    <Trash2 className="text-[#564476]" />
+                                  </button>
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>

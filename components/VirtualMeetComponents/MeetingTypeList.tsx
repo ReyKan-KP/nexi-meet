@@ -30,7 +30,7 @@ const MeetingTypeList = () => {
   const [callDetail, setCallDetail] = useState<Call>();
   const client = useStreamVideoClient();
   const { data: session, status } = useSession();
-
+  // const desc = "";
   const createEvent = async () => {
     if (!client || !session?.user) return;
     try {
@@ -55,28 +55,29 @@ const MeetingTypeList = () => {
       setCallDetail(call);
 
       // Store the event in the database
-      // const eventLink = `${process.env.NEXT_PUBLIC_BASE_URL}/meeting/${call.id}`;
-      // const noteData = {
-      //   userId: session.user.id,
-      //   userName: session.user.name,
-      //   userEmail: session.user.email,
-      //   date: values.dateTime,
-      //   time: values.dateTime.toLocaleTimeString(),
-      //   text: description,
-      //   link: eventLink,
-      // };
+      const eventLink = `${process.env.NEXT_PUBLIC_BASE_URL}/meeting/${call.id}`;
+      const noteData = {
+        userId: session.user.id,
+        userName: session.user.name,
+        userEmail: session.user.email,
+        date: values.dateTime.toISOString(),
+        time: values.dateTime.toLocaleTimeString(),
+        text: description,
+        link: eventLink,
+      };
 
-      // const response = await fetch('/api/notes/create', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify(noteData),
-      // });
+      const response = await fetch('/api/notes/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(noteData),
+      });
 
-      // if (!response.ok) {
-      //   throw new Error('Failed to save note');
-      // }
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to save note');
+      }
 
       if (!values.description) {
         router.push(`/meeting/${call.id}`);

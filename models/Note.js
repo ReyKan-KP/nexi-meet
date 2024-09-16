@@ -8,7 +8,7 @@ const noteSchema = new mongoose.Schema(
     date: { type: Date, required: true },
     time: { type: String, required: true, default: "10:00" },
     text: { type: String, required: true },
-    link: { type: String, required: true }, // Add this line
+    link: { type: String, required: false },
   },
   { timestamps: true }
 );

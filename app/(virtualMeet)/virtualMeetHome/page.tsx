@@ -18,7 +18,7 @@ const VirtualMeetHome = () => {
       <MeetingTypeList />
 
       <div>
-        <h2 className="text-2xl font-bold mb-4">Upcoming Events</h2>
+        {/* <h2 className="text-2xl font-bold mb-4">Upcoming Events</h2> */}
         <UpcomingEventsList />
       </div>
     </section>

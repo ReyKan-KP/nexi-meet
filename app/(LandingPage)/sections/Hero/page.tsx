@@ -18,7 +18,7 @@ const generateImageElements = (images: string[]) => {
   return (
     <>
       {images.map((src, index) => (
-        <div key={`${src}-${index}`} className={styles["image-wrapper"]}>
+        <div key={`${src}-${index}`} className={`${styles["image-wrapper"]} ${styles["fade-edges"]}`}>
           <Image
             className={styles.image}
             src={src}

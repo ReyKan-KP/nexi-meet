@@ -11,6 +11,7 @@ import IconButton from "@mui/material/IconButton";
 import { Bell } from "lucide-react";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import Loader from "@components/ui/Loader";
+import { motion } from 'framer-motion';
 
 const UserProfileForm = lazy(
   () => import("@components/ProfileComponents/Settings/UserProfileForm")
@@ -51,8 +52,6 @@ const AttendeeSection = lazy(
 const NotificationBell = lazy(
   () => import("@components/ProfileComponents/NotificationBell")
 );
-
-// import UserDashboard from "@components/ProfileComponents/UserDashboard";
 
 interface SessionData {
   user?: {
@@ -218,148 +217,124 @@ const MyProfile: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto sm:px-6 sm:py-16">
-      <div className="bg-white rounded-lg p-6">
-        <div className="bg-white shadow rounded-lg p-6">
-          <div className="flex flex-col items-center space-y-4 md:flex-row md:items-start md:space-x-6">
-            <Image
-              src={image || "/images/user1.png"}
-              width={80}
-              height={80}
-              alt="Profile"
-              className="w-20 h-20 rounded-full shadow-lg"
-            />
-            <div className="text-center md:text-left">
-              <h1 className="text-2xl font-bold text-teal-700">{name}</h1>
-              <p className="text-gray-600">{email}</p>
-              <p className="text-gray-600">Phone: {phoneNumber}</p>
-              <p className="text-gray-600">Role: {session?.user?.role}</p>
-              <p className="text-gray-600">Visibility: {profileVisibility}</p>
-              <p className="text-gray-600">Bio: {bio}</p>
-            </div>
-            <div className="flex justify-end md:ml-auto">
-              <ClickAwayListener onClickAway={handleClickAway}>
-                <div className="relative">
-                  <IconButton color="inherit" onClick={handleBellClick}>
-                    <Badge badgeContent={notificationCount} color="secondary">
-                      <Bell />
-                    </Badge>
-                  </IconButton>
-                  {isBellOpen && (
-                    <Suspense fallback={<Loader color="#36d7b7" />}>
-                      <NotificationBell
-                        notifications={notes}
-                        markAsRead={markAsRead}
-                      />
-                    </Suspense>
-                  )}
+    <div className="min-h-screen ">
+      <div className="container mx-auto px-4 py-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
+            <div className="p-6">
+              <div className="flex flex-col items-center space-y-4 md:flex-row md:items-start md:space-x-6">
+                <Image
+                  src={image || "/images/user1.png"}
+                  width={80}
+                  height={80}
+                  alt="Profile"
+                  className="w-20 h-20 rounded-full shadow-lg transition-transform duration-300 hover:scale-105"
+                />
+                <div className="text-center md:text-left space-y-2">
+                  <h1 className="text-2xl font-bold text-teal-700 dark:text-teal-300">{name}</h1>
+                  <p className="text-gray-600 dark:text-gray-300">{email}</p>
+                  <p className="text-gray-600 dark:text-gray-300">Phone: {phoneNumber}</p>
+                  <p className="text-gray-600 dark:text-gray-300">Role: {session?.user?.role}</p>
+                  <p className="text-gray-600 dark:text-gray-300">Visibility: {profileVisibility}</p>
+                  <p className="text-gray-600 dark:text-gray-300">Bio: {bio}</p>
                 </div>
-              </ClickAwayListener>
+                <div className="flex justify-end md:ml-auto">
+                  <ClickAwayListener onClickAway={handleClickAway}>
+                    <div className="relative">
+                      <IconButton color="inherit" onClick={handleBellClick}>
+                        <Badge badgeContent={notificationCount} color="secondary">
+                          <Bell className="text-teal-600 dark:text-teal-300" />
+                        </Badge>
+                      </IconButton>
+                      {isBellOpen && (
+                        <Suspense fallback={<Loader color="#36d7b7" />}>
+                          <NotificationBell
+                            notifications={notes}
+                            markAsRead={markAsRead}
+                          />
+                        </Suspense>
+                      )}
+                    </div>
+                  </ClickAwayListener>
+                </div>
+              </div>
+            </div>
+            <div className="border-t border-gray-200 dark:border-gray-700">
+              <Tabs
+                value={selectedTab}
+                onChange={handleChange}
+                centered
+                className="justify-center"
+                variant="fullWidth"
+                TabIndicatorProps={{
+                  style: {
+                    backgroundColor: '#0D9488',
+                  }
+                }}
+              >
+                {tabs.map((tab) => (
+                  <Tab
+                    key={tab}
+                    label={tab}
+                    value={tab}
+                    className="text-teal-600 dark:text-teal-300"
+                  />
+                ))}
+              </Tabs>
+            </div>
+            <div className="p-6">
+              {selectedTab === "Calendar" && (
+                <Suspense fallback={<Loader color="#36d7b7" />}>
+                  <CalendarWithNotes />
+                </Suspense>
+              )}
+              {selectedTab === "Role-Specific" && (
+                <Suspense fallback={<Loader color="#36d7b7" />}>
+                  <RoleSpecific role={session?.user?.role} />
+                </Suspense>
+              )}
+              {selectedTab === "Activity Log" && (
+                <Suspense fallback={<Loader color="#36d7b7" />}>
+                  <ActivityLog />
+                </Suspense>
+              )}
+              {selectedTab === "Linked Social Accounts" && (
+                <Suspense fallback={<Loader color="#36d7b7" />}>
+                  <LinkedSocialAccounts />
+                </Suspense>
+              )}
+              {selectedTab === "Settings" && (
+                <div className="mt-4 flex flex-col md:flex-row">
+                  <div className="w-full md:w-1/4 mb-4 md:mb-0">
+                    <ul className="space-y-2">
+                      {["UserProfileForm", "PrivacySettings", "Notifications", "AccountSecurity", "ConnectedApps"].map((setting) => (
+                        <li key={setting}>
+                          <button
+                            onClick={() => setSelectedSetting(setting)}
+                            className={`w-full text-left px-3 py-2 rounded transition-colors duration-200 ${
+                              selectedSetting === setting
+                                ? "bg-teal-100 text-teal-700 dark:bg-teal-800 dark:text-teal-200"
+                                : "text-gray-700 dark:text-gray-300 hover:bg-teal-50 dark:hover:bg-teal-900"
+                            }`}
+                          >
+                            {setting.replace(/([A-Z])/g, ' $1').trim()}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="w-full md:w-3/4 md:pl-6">
+                    {renderSettingsContent()}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
-        </div>
-        <div className="mt-6">
-          <Tabs
-            value={selectedTab}
-            onChange={handleChange}
-            centered
-            className="justify-center"
-            variant="fullWidth"
-          >
-            {tabs.map((tab) => (
-              <Tab key={tab} label={tab} value={tab} />
-            ))}
-          </Tabs>
-          {selectedTab === "Calendar" && (
-            <Suspense fallback={<Loader color="#36d7b7" />}>
-              <CalendarWithNotes />
-            </Suspense>
-          )}
-          {selectedTab === "Role-Specific" && (
-            <Suspense fallback={<Loader color="#36d7b7" />}>
-              <RoleSpecific role={session?.user?.role} />
-            </Suspense>
-          )}
-          {selectedTab === "Activity Log" && (
-            <Suspense fallback={<Loader color="#36d7b7" />}>
-              <ActivityLog />
-            </Suspense>
-          )}
-          {selectedTab === "Linked Social Accounts" && (
-            <Suspense fallback={<Loader color="#36d7b7" />}>
-              <LinkedSocialAccounts />
-            </Suspense>
-          )}
-          {selectedTab === "Settings" && (
-            <div className="mt-4 flex flex-row">
-              <div className="flex-none w-1/4 p-4">
-                <ul className="flex flex-col space-y-4">
-                  <li>
-                    <button
-                      onClick={() => setSelectedSetting("UserProfileForm")}
-                      className={`w-full text-left ${
-                        selectedSetting === "UserProfileForm"
-                          ? "text-teal-700 font-bold"
-                          : "text-gray-700"
-                      }`}
-                    >
-                      Profile
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      onClick={() => setSelectedSetting("PrivacySettings")}
-                      className={`w-full text-left ${
-                        selectedSetting === "PrivacySettings"
-                          ? "text-teal-700 font-bold"
-                          : "text-gray-700"
-                      }`}
-                    >
-                      Privacy
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      onClick={() => setSelectedSetting("Notifications")}
-                      className={`w-full text-left ${
-                        selectedSetting === "Notifications"
-                          ? "text-teal-700 font-bold"
-                          : "text-gray-700"
-                      }`}
-                    >
-                      Notifications
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      onClick={() => setSelectedSetting("AccountSecurity")}
-                      className={`w-full text-left ${
-                        selectedSetting === "AccountSecurity"
-                          ? "text-teal-700 font-bold"
-                          : "text-gray-700"
-                      }`}
-                    >
-                      Account Security
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      onClick={() => setSelectedSetting("ConnectedApps")}
-                      className={`w-full text-left ${
-                        selectedSetting === "ConnectedApps"
-                          ? "text-teal-700 font-bold"
-                          : "text-gray-700"
-                      }`}
-                    >
-                      Connected Apps
-                    </button>
-                  </li>
-                </ul>
-              </div>
-              <div className="flex-grow p-4">{renderSettingsContent()}</div>
-            </div>
-          )}
-        </div>
+        </motion.div>
       </div>
     </div>
   );
@@ -399,6 +374,5 @@ const RoleSpecific: React.FC<RoleSpecificProps> = ({ role }) => {
       return null;
   }
 };
-
 
 export default MyProfile;
