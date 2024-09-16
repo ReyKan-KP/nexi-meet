@@ -1,0 +1,25 @@
+.scroll-container {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.scroll-container > * {
+  flex-shrink: 0;
+}
+
+/* Add this to ensure consistent spacing */
+.grid-cols-1 .gap-8 {
+  gap: 2rem; /* Adjust as needed */
+}
+
+@media (min-width: 768px) {
+  .grid-cols-1 .gap-8 {
+    gap: 1.5rem; /* Adjust as needed */
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-cols-1 .gap-8 {
+    gap: 1rem; /* Adjust as needed */
+  }
+}

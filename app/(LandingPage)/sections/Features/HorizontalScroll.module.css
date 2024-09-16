@@ -1,0 +1,44 @@
+.container {
+  width: 600%;
+  height: 100%;
+  display: flex;
+  flex-wrap: no-wrap;
+}
+
+.panel {
+  will-change: transform;
+}
+
+.blue {
+  background-color: blue;
+}
+
+.red {
+  background-color: red;
+}
+
+.orange {
+  background-color: orange;
+}
+
+.purple {
+  background-color: purple;
+}
+
+.green {
+  background-color: green;
+}
+
+.gray {
+  background-color: gray;
+}
+
+.scrollDown {
+  position: absolute;
+  bottom: 20px;
+  text-align: center;
+}
+
+.arrow {
+  /* Add your arrow styles here */
+}

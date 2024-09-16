@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import LandingPage from "@components/LandingPage";
+import LandingPage from "./(LandingPage)/Home/page";
 // import Hero from "@sections/Hero";
 
 import { useEffect } from "react";

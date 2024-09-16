@@ -157,7 +157,7 @@ const Nav = () => {
           )}
         </div>
         <Link
-          href="/contact-us"
+          href="/Contact"
           className="text-gray-700 no-underline hover:text-blue-400"
         >
           Contact Us
@@ -306,7 +306,7 @@ const Nav = () => {
             )}
           </div>
           <Link
-            href="/contact-us"
+            href="/Contact"
             className="text-white no-underline hover:text-blue-400 mb-4"
           >
             Contact Us

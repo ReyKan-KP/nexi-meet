@@ -12,6 +12,8 @@ import ReactDatePicker from "react-datepicker";
 import { Input } from "@components/ui/input";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { BentoGrid, BentoCard } from "@/components/magicui/bento-grid";
+import { PlusIcon, CalendarIcon, PlayIcon, UsersIcon } from "lucide-react";
 
 const initialValues = {
   dateTime: new Date(),
@@ -29,7 +31,6 @@ const MeetingTypeList = () => {
   const client = useStreamVideoClient();
   const { data: session, status } = useSession();
 
-  // console.log("id",session?.user.id);
   const createEvent = async () => {
     if (!client || !session?.user) return;
     try {
@@ -52,8 +53,30 @@ const MeetingTypeList = () => {
         },
       });
       setCallDetail(call);
-      console.log("call", call);
-      console.log("values", values);
+
+      // Store the event in the database
+      // const eventLink = `${process.env.NEXT_PUBLIC_BASE_URL}/meeting/${call.id}`;
+      // const noteData = {
+      //   userId: session.user.id,
+      //   userName: session.user.name,
+      //   userEmail: session.user.email,
+      //   date: values.dateTime,
+      //   time: values.dateTime.toLocaleTimeString(),
+      //   text: description,
+      //   link: eventLink,
+      // };
+
+      // const response = await fetch('/api/notes/create', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify(noteData),
+      // });
+
+      // if (!response.ok) {
+      //   throw new Error('Failed to save note');
+      // }
 
       if (!values.description) {
         router.push(`/meeting/${call.id}`);
@@ -69,35 +92,65 @@ const MeetingTypeList = () => {
 
   const eventLink = `${process.env.NEXT_PUBLIC_BASE_URL}/meeting/${callDetail?.id}`;
 
+  const meetingTypes = [
+    {
+      Icon: PlusIcon,
+      name: "Create New Event",
+      description: "Start an instant Event",
+      href: "#",
+      cta: "Create Event",
+      className: "col-span-2 md:col-span-2",
+      handleClick: () => setEventState("isInstantEvent"),
+      background: (
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800" />
+      ),
+    },
+    {
+      Icon: CalendarIcon,
+      name: "Schedule Event",
+      description: "Plan your Event",
+      href: "#",
+      cta: "Schedule",
+      className: "col-span-2 md:col-span-2",
+      handleClick: () => setEventState("isScheduleEvent"),
+      background: (
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-100 to-purple-200 dark:from-purple-900 dark:to-purple-800" />
+      ),
+    },
+    {
+      Icon: PlayIcon,
+      name: "View Recordings",
+      description: "Check out your Recordings",
+      href: "/virtualMeetHome/recordings",
+      cta: "View",
+      className: "col-span-2 md:col-span-2",
+      handleClick: () => router.push("/virtualMeetHome/recordings"),
+      background: (
+        <div className="absolute inset-0 bg-gradient-to-br from-yellow-100 to-yellow-200 dark:from-yellow-900 dark:to-yellow-800" />
+      ),
+    },
+    {
+      Icon: UsersIcon,
+      name: "Join Event",
+      description: "via invitation link",
+      href: "#",
+      cta: "Join",
+      className: "col-span-2 md:col-span-2",
+      handleClick: () => setEventState("isJoiningEvent"),
+      background: (
+        <div className="absolute inset-0 bg-gradient-to-br from-green-100 to-green-200 dark:from-green-900 dark:to-green-800" />
+      ),
+    },
+  ];
+  // console.log(callDetail);
+
   return (
-    <section className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
-      <HomeCard
-        imgSrc="/icons/add-meeting.svg"
-        title="Create New Event"
-        description="Start an instant Event"
-        handleClick={() => setEventState("isInstantEvent")}
-      />
-      <HomeCard
-        imgSrc="/icons/schedule.svg"
-        title="Schedule Event"
-        description="Plan your Event"
-        handleClick={() => setEventState("isScheduleEvent")}
-        className="bg-purple-1"
-      />
-      <HomeCard
-        imgSrc="/icons/recordings.svg"
-        title="View Recordings"
-        description="Check out your Recordings"
-        handleClick={() => router.push("/virtualMeetHome/recordings")}
-        className="bg-yellow-1"
-      />
-      <HomeCard
-        imgSrc="/icons/join-meeting.svg"
-        title="Join Event"
-        description="via invitation link"
-        handleClick={() => setEventState("isJoiningEvent")}
-        className="bg-blue-1"
-      />
+    <>
+      <BentoGrid className="grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[12rem] md:auto-rows-[16rem]">
+        {meetingTypes.map((type, idx) => (
+          <BentoCard key={idx} {...type} />
+        ))}
+      </BentoGrid>
 
       {!callDetail ? (
         <MeetingModel
@@ -173,7 +226,7 @@ const MeetingTypeList = () => {
         handleClick={createEvent}
       />
       <ToastContainer />
-    </section>
+    </>
   );
 };
 

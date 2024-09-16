@@ -22,8 +22,13 @@ const generateImageElements = (images: string[]) => {
             className={styles.image}
             src={src}
             alt={`Image ${index + 1}`}
-            layout="fill"
-            objectFit="cover"
+            width={500}
+            height={300}
+            style={{
+              maxWidth: "100%",
+              height: "auto",
+              objectFit: "cover",
+            }}
           />
         </div>
       ))}
