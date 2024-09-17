@@ -27,6 +27,10 @@ export async function POST(req) {
       userId,
       userName,
       userEmail,
+      ticketPrice,
+      paymentMethod,
+      bankAccountNumber,
+      upiId,
     } = data;
 
     if (
@@ -46,6 +50,13 @@ export async function POST(req) {
     ) {
       return new Response(
         JSON.stringify({ message: "Missing required fields" }),
+        { status: 400 }
+      );
+    }
+
+    if (ticketType === "paid" && (!ticketPrice || !paymentMethod)) {
+      return new Response(
+        JSON.stringify({ message: "Ticket price and payment method are required for paid tickets" }),
         { status: 400 }
       );
     }
@@ -74,6 +85,10 @@ export async function POST(req) {
       userId,
       userName,
       userEmail,
+      ticketPrice: ticketType === "paid" ? ticketPrice : undefined,
+      paymentMethod: ticketType === "paid" ? paymentMethod : undefined,
+      bankAccountNumber: paymentMethod === "bank" ? bankAccountNumber : undefined,
+      upiId: paymentMethod === "upi" ? upiId : undefined,
     });
 
     return new Response(

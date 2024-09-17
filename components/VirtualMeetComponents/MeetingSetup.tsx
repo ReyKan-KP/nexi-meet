@@ -6,6 +6,7 @@ import {
   useCall,
   useCallStateHooks,
 } from "@stream-io/video-react-sdk";
+import { toast } from "react-toastify";
 
 import Alert from "@components/ui/Alert";
 import { Button } from "@components/ui/button";
@@ -34,6 +35,8 @@ const MeetingSetup = ({
   // https://getstream.io/video/docs/react/ui-cookbook/replacing-call-controls/
   const [isMicCamToggled, setIsMicCamToggled] = useState(false);
 
+  const [deviceCheckComplete, setDeviceCheckComplete] = useState(false);
+
   useEffect(() => {
     if (isMicCamToggled) {
       call.camera.disable();
@@ -43,6 +46,34 @@ const MeetingSetup = ({
       call.microphone.enable();
     }
   }, [isMicCamToggled, call.camera, call.microphone]);
+
+  useEffect(() => {
+    const checkDevices = async () => {
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const hasCamera = devices.some(device => device.kind === 'videoinput');
+        const hasMicrophone = devices.some(device => device.kind === 'audioinput');
+
+        if (!hasCamera) {
+          toast.error("No camera available");
+        }
+        if (!hasMicrophone) {
+          toast.error("No microphone available");
+        }
+      } catch (error) {
+        console.error("Error checking devices:", error);
+        toast.error("Unable to check for available devices");
+      } finally {
+        setDeviceCheckComplete(true);
+      }
+    };
+
+    checkDevices();
+  }, []);
+
+  if (!deviceCheckComplete) {
+    return <div>Checking devices...</div>;
+  }
 
   if (callTimeNotArrived)
     return (

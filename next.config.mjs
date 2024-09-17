@@ -12,6 +12,7 @@ const nextConfig = {
         pathname: "**",
       },
     ],
+    domains: ['res.cloudinary.com'],
   },
   webpack(config) {
     config.experiments = {

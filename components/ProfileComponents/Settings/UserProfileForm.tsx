@@ -12,7 +12,14 @@ const UserProfileForm: React.FC = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    id: string;
+    name: string;
+    email: string;
+    phoneNumber: string;
+    bio: string;
+    image: string | File; // Allow image to be a string or a File
+  }>({
     id: "",
     name: "",
     email: "",
@@ -66,6 +73,32 @@ const UserProfileForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Handle file upload if a file is selected
+    if (formData.image && typeof formData.image !== "string") {
+      const file = formData.image;
+      const uploadFormData = new FormData();
+      uploadFormData.append("file", file);
+
+      try {
+        const uploadResponse = await fetch("/api/upload", {
+          method: "POST",
+          body: uploadFormData,
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error("Failed to upload image");
+        }
+
+        const uploadData = await uploadResponse.json();
+        formData.image = uploadData.url; // Update formData with the uploaded image URL
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        toast.error("Error uploading image: " + error);
+        return; // Exit the function if image upload fails
+      }
+    }
+
+    // Proceed with form submission
     try {
       const response = await fetch("/api/updateProfile", {
         method: "POST",
@@ -87,12 +120,11 @@ const UserProfileForm: React.FC = () => {
     }
   };
 
-  const handleFileUpload = (files: File[]) => {
+  const handleFileChange = (files: File[]) => {
     if (files.length > 0) {
-      const file = files[0];
       setFormData((prevData) => ({
         ...prevData,
-        image: URL.createObjectURL(file),
+        image: files[0], // Temporarily store the file object
       }));
     }
   };
@@ -155,7 +187,7 @@ const UserProfileForm: React.FC = () => {
           </label>
           <div className="flex flex-col sm:flex-row items-center gap-4">
             <div className="w-full sm:w-2/3">
-              <FileUpload onChange={handleFileUpload} />
+              <FileUpload onChange={handleFileChange} />
             </div>
             <motion.div
               initial={{ opacity: 0 }}
@@ -168,11 +200,11 @@ const UserProfileForm: React.FC = () => {
                 transition={{ type: "spring", stiffness: 300 }}
               >
                 <Image
-                  src={formData.image || "/images/user1.png"}
+                  src={typeof formData.image === "string" ? formData.image : "/images/user1.png"}
                   alt="Profile Preview"
                   width={80}
                   height={80}
-                  className="w-20 h-20 rounded-full border-2 border-[#564476]"
+                  className="w-20 h-20 rounded-full border-2 border-[#564476] object-cover" // Added object-cover class
                 />
               </motion.div>
             </motion.div>

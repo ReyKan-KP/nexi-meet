@@ -10,6 +10,9 @@ import { FaCheck, FaPlus, FaTrash } from "react-icons/fa";
 import Image from "next/image";
 import { FileUpload } from "@/components/ui/file-upload";
 import { useSession } from "next-auth/react";
+import { Call, useStreamVideoClient } from "@stream-io/video-react-sdk";
+import { toast, ToastContainer } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 const RichTextEditor = dynamic(() => import("@/components/RichTextEditor"), {
   ssr: false,
@@ -26,6 +29,7 @@ const EventCreationPage: React.FC = () => {
     eventName: string;
     eventDescription: string;
     eventCategory: string;
+    otherCategory?: string;
     startDate: Date;
     startTime: string;
     endDate: Date;
@@ -35,17 +39,21 @@ const EventCreationPage: React.FC = () => {
     physicalAddress: string;
     organizer: {
       name: string;
-      image: File | null;
+      image: File | null | string | any;
     };
     banner: File | null;
     agenda: { time: string; title: string; speaker: string }[];
     sponsors: { file: File }[];
-    ticketType: "free" | "paid" | "donation";
+    ticketType: "free" | "paid";
     capacity: string;
     isPrivate: boolean;
     userId: string;
     userName: string;
     userEmail: string;
+    bankAccountNumber?: string;
+    upiId?: string;
+    paymentMethod?: "bank" | "upi";
+    ticketPrice?: number;
   }>({
     defaultValues: {
       eventName: "",
@@ -79,6 +87,24 @@ const EventCreationPage: React.FC = () => {
       setValue("userId", session.user.id);
       setValue("userName", session.user?.name ?? "");
       setValue("userEmail", session.user?.email ?? "");
+
+      // Fetch user profile data
+      const fetchUserProfile = async () => {
+        try {
+          const response = await fetch(`/api/updateProfile?id=${session.user.id}`);
+          if (response.ok) {
+            const userData = await response.json();
+            setValue("organizer.name", userData.name);
+            if (userData.image) {
+              setValue("organizer.image", userData.image);
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching user profile:", error);
+        }
+      };
+
+      fetchUserProfile();
     }
   }, [session, setValue]);
 
@@ -104,6 +130,9 @@ const EventCreationPage: React.FC = () => {
   const [step, setStep] = useState(1);
   const totalSteps = 7; // Total number of steps
   const progressControls = useAnimation();
+   const client = useStreamVideoClient();
+  const router = useRouter();
+  const [generatedLink, setGeneratedLink] = useState<string | null>(null);
 
   const onSubmit = async (data: any) => {
     try {
@@ -183,6 +212,7 @@ const EventCreationPage: React.FC = () => {
       if (response.ok) {
         const result = await response.json();
         console.log("Event created successfully:", result);
+        toast.success("Event created successfully!"); // Show success message
         // Optionally, reset the form or redirect the user
       } else {
         const error = await response.json();
@@ -225,6 +255,46 @@ const EventCreationPage: React.FC = () => {
     };
   }, [sponsorsWithPreview]);
 
+  const generateMeetingLink = async () => {
+    if (!client || !session?.user) {
+      toast.error("You must be logged in to generate a meeting link");
+      return;
+    }
+
+    try {
+      const id = crypto.randomUUID();
+      const call = client.call("default", id);
+      if (!call) throw new Error("Failed to create event");
+
+      const startsAt = watch("startDate").toISOString();
+      const description = watch("eventName") || "Virtual Event";
+
+      await call.getOrCreate({
+        data: {
+          starts_at: startsAt,
+          custom: {
+            description,
+          },
+        },
+      });
+
+      const eventLink = `${process.env.NEXT_PUBLIC_BASE_URL}/meeting/${call.id}`;
+      setGeneratedLink(eventLink);
+      setValue("virtualLink", eventLink);
+      toast.success("Meeting link generated successfully");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to generate meeting link");
+    }
+  };
+
+  const copyToClipboard = () => {
+    if (generatedLink) {
+      navigator.clipboard.writeText(generatedLink);
+      toast.success("Link copied to clipboard");
+    }
+  };
+
   const renderStep = (currentStep: number) => {
     switch (currentStep) {
       case 1:
@@ -233,57 +303,113 @@ const EventCreationPage: React.FC = () => {
             <h2 className="text-3xl font-semibold text-gray-800 mb-6">
               Event Details
             </h2>
-            <Controller
-              name="eventName"
-              control={control}
-              rules={{ required: "Event name is required" }}
-              render={({ field, fieldState: { error } }) => (
-                <motion.div
-                  initial={false}
-                  animate={error ? { x: [-10, 10, -10, 10, 0] } : {}}
-                  transition={{ type: "spring", stiffness: 300, damping: 10 }}
+            <div className="space-y-6">
+              <div>
+                <label
+                  htmlFor="eventName"
+                  className="block font-medium text-lg text-gray-700 mb-1"
                 >
-                  <input
-                    {...field}
-                    placeholder="Event Name"
-                    className={`w-full h-12 px-3 mb-4 border ${
-                      error ? "border-red-500" : "border-gray-300"
-                    } rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all duration-300 ease-in-out`}
-                  />
-                  {error && (
-                    <p className="text-red-500 text-sm mt-1">{error.message}</p>
+                  Event Name
+                </label>
+                <Controller
+                  name="eventName"
+                  control={control}
+                  rules={{ required: "Event name is required" }}
+                  render={({ field, fieldState: { error } }) => (
+                    <motion.div
+                      initial={false}
+                      animate={error ? { x: [-10, 10, -10, 10, 0] } : {}}
+                      transition={{
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 10,
+                      }}
+                    >
+                      <input
+                        id="eventName"
+                        {...field}
+                        placeholder="Enter event name"
+                        className={`w-full h-12 px-3 border ${
+                          error ? "border-red-500" : "border-gray-300"
+                        } rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all duration-300 ease-in-out`}
+                      />
+                      {error && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {error.message}
+                        </p>
+                      )}
+                    </motion.div>
                   )}
-                </motion.div>
-              )}
-            />
-            <Controller
-              name="eventDescription"
-              control={control}
-              render={({ field }) => <RichTextEditor {...field} />}
-            />
-            <Controller
-              name="eventCategory"
-              control={control}
-              rules={{ required: "Event category is required" }}
-              render={({ field, fieldState: { error } }) => (
-                <>
-                  <select
-                    {...field}
-                    className={`w-full h-12 px-3 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 ${
-                      error ? "border-red-500" : ""
-                    }`}
-                  >
-                    <option value="">Select Category</option>
-                    <option value="conference">Conference</option>
-                    <option value="workshop">Workshop</option>
-                    <option value="webinar">Webinar</option>
-                  </select>
-                  {error && (
-                    <p className="text-red-500 text-sm mt-1">{error.message}</p>
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="eventDescription"
+                  className="block text-lg font-medium text-gray-700 mb-1"
+                >
+                  Event Description
+                </label>
+                <Controller
+                  name="eventDescription"
+                  control={control}
+                  render={({ field }) => <RichTextEditor {...field} />}
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="eventCategory"
+                  className="block text-lg font-medium text-gray-700 mb-1"
+                >
+                  Event Category
+                </label>
+                <Controller
+                  name="eventCategory"
+                  control={control}
+                  rules={{ required: "Event category is required" }}
+                  render={({ field, fieldState: { error } }) => (
+                    <>
+                      <select
+                        id="eventCategory"
+                        {...field}
+                        className={`w-full h-12 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 ${
+                          error ? "border-red-500" : ""
+                        }`}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          if (e.target.value !== "other") {
+                            setValue("otherCategory", ""); // Clear other category if not selected
+                          }
+                        }}
+                      >
+                        <option value="">Select Category</option>
+                        <option value="conference">Conference</option>
+                        <option value="workshop">Workshop</option>
+                        <option value="webinar">Webinar</option>
+                        <option value="other">Other</option>{" "}
+                        {/* Added Other option */}
+                      </select>
+                      {error && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {error.message}
+                        </p>
+                      )}
+                      {watch("eventCategory") === "other" && ( // Show input if Other is selected
+                        <input
+                          type="text"
+                          placeholder="Please specify"
+                          className="w-full h-10 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 mt-2"
+                          {...register("otherCategory", {
+                            required: "Please specify the category",
+                          })}
+                        />
+                      )}
+                    </>
                   )}
-                </>
-              )}
-            />
+                />
+              </div>
+            </div>
           </>
         );
       case 2:
@@ -405,32 +531,51 @@ const EventCreationPage: React.FC = () => {
               />
             </div>
             {watch("locationType") === "virtual" && (
-              <Controller
-                name="virtualLink"
-                control={control}
-                rules={{ required: "Virtual meeting link is required" }}
-                render={({ field, fieldState: { error } }) => (
-                  <motion.div
-                    initial={false}
-                    animate={error ? { x: [-10, 10, -10, 10, 0] } : {}}
-                    transition={{ type: "spring", stiffness: 300, damping: 10 }}
-                    className="mt-4"
-                  >
-                    <input
-                      {...field}
-                      placeholder="Virtual Meeting Link"
-                      className={`w-full h-12 px-3 mb-4 border ${
-                        error ? "border-red-500" : "border-gray-300"
-                      } rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500`}
-                    />
-                    {error && (
-                      <p className="text-red-500 text-sm mt-1">
-                        {error.message}
-                      </p>
-                    )}
-                  </motion.div>
-                )}
-              />
+              <div className="mt-4">
+                <Controller
+                  name="virtualLink"
+                  control={control}
+                  rules={{ required: "Virtual meeting link is required" }}
+                  render={({ field, fieldState: { error } }) => (
+                    <motion.div
+                      initial={false}
+                      animate={error ? { x: [-10, 10, -10, 10, 0] } : {}}
+                      transition={{ type: "spring", stiffness: 300, damping: 10 }}
+                      className="space-y-2"
+                    >
+                      <input
+                        {...field}
+                        placeholder="Virtual Meeting Link"
+                        className={`w-full h-12 px-3 border ${
+                          error ? "border-red-500" : "border-gray-300"
+                        } rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500`}
+                        readOnly
+                      />
+                      {error && (
+                        <p className="text-red-500 text-sm">{error.message}</p>
+                      )}
+                      {!generatedLink && (
+                        <button
+                          type="button"
+                          onClick={generateMeetingLink}
+                          className="px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600 transition-colors"
+                        >
+                          Generate Meeting Link
+                        </button>
+                      )}
+                      {generatedLink && (
+                        <button
+                          type="button"
+                          onClick={copyToClipboard}
+                          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                        >
+                          Copy Link
+                        </button>
+                      )}
+                    </motion.div>
+                  )}
+                />
+              </div>
             )}
             {watch("locationType") === "physical" && (
               <Controller
@@ -495,6 +640,23 @@ const EventCreationPage: React.FC = () => {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Organizer Image
               </label>
+              {/* {watch("organizer.image") ? (
+                <div className="relative w-32 h-32 mb-4 mx-auto">
+                  <Image
+                    src={
+                      watch("organizer.image") && typeof watch("organizer.image") === "string"
+                        ? watch("organizer.image")
+                        : watch("organizer.image") instanceof File
+                        ? URL.createObjectURL(watch("organizer.image") as File) // Ensure it's a File
+                        : "" // Provide a fallback for null
+                    }
+                    alt="Organizer"
+                    layout="fill"
+                    objectFit="cover"
+                    className="rounded-full"
+                  />
+                </div>
+              ) : null} */}
               <FileUpload onChange={handleFileUpload} />
               {watch("organizer.image") && (
                 <p>{(watch("organizer.image") as File).name}</p>
@@ -513,9 +675,7 @@ const EventCreationPage: React.FC = () => {
                 Event Banner
               </label>
               <FileUpload onChange={handleFileUpload} />
-              {watch("banner") && (
-                <p>{(watch("banner") as File).name}</p>
-              )}
+              {watch("banner") && <p>{(watch("banner") as File).name}</p>}
             </div>
           </>
         );
@@ -648,7 +808,9 @@ const EventCreationPage: React.FC = () => {
                           type="button"
                           onClick={() => {
                             removeSponsor(index);
-                            setSponsorsWithPreview((prev) => prev.filter((_, i) => i !== index));
+                            setSponsorsWithPreview((prev) =>
+                              prev.filter((_, i) => i !== index)
+                            );
                           }}
                           className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
                         >
@@ -678,10 +840,102 @@ const EventCreationPage: React.FC = () => {
                 >
                   <option value="free">Free</option>
                   <option value="paid">Paid</option>
-                  <option value="donation">Donation-based</option>
+                  {/* <option value="donation">Donation-based</option> */}
                 </select>
               )}
             />
+            {watch("ticketType") === "paid" && ( // New condition for paid ticket
+              <>
+                <Controller
+                  name="ticketPrice"
+                  control={control}
+                  rules={{ required: "Ticket price is required" }}
+                  render={({ field, fieldState: { error } }) => (
+                    <>
+                      <input
+                        type="number"
+                        {...field}
+                        placeholder="Ticket Price"
+                        className={`w-full h-12 px-3 mb-4 border ${
+                          error ? "border-red-500" : "border-gray-300"
+                        } rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500`}
+                      />
+                      {error && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {error.message}
+                        </p>
+                      )}
+                    </>
+                  )}
+                />
+                <Controller
+                  name="paymentMethod"
+                  control={control}
+                  render={({ field }) => (
+                    <select
+                      {...field}
+                      className="w-full h-12 px-3 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    >
+                      <option value="">Select Payment Method</option>
+                      <option value="bank">Bank Details</option>
+                      <option value="upi">UPI ID</option>
+                    </select>
+                  )}
+                />
+                {watch("paymentMethod") === "bank" && ( // Bank details fields
+                  <>
+                    <h3 className="text-lg font-semibold mt-4">Bank Details</h3>
+                    <Controller
+                      name="bankAccountNumber"
+                      control={control}
+                      rules={{ required: "Account number is required" }}
+                      render={({ field, fieldState: { error } }) => (
+                        <>
+                          <input
+                            type="text"
+                            {...field}
+                            placeholder="Account Number"
+                            className={`w-full h-12 px-3 mb-4 border ${
+                              error ? "border-red-500" : "border-gray-300"
+                            } rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500`}
+                          />
+                          {error && (
+                            <p className="text-red-500 text-sm mt-1">
+                              {error.message}
+                            </p>
+                          )}
+                        </>
+                      )}
+                    />
+                    {/* Add more fields for bank details as needed */}
+                  </>
+                )}
+                {watch("paymentMethod") === "upi" && ( // UPI ID field
+                  <Controller
+                    name="upiId"
+                    control={control}
+                    rules={{ required: "UPI ID is required" }}
+                    render={({ field, fieldState: { error } }) => (
+                      <>
+                        <input
+                          type="text"
+                          {...field}
+                          placeholder="UPI ID"
+                          className={`w-full h-12 px-3 mb-4 border ${
+                            error ? "border-red-500" : "border-gray-300"
+                          } rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500`}
+                        />
+                        {error && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {error.message}
+                          </p>
+                        )}
+                      </>
+                    )}
+                  />
+                )}
+              </>
+            )}
             <Controller
               name="capacity"
               control={control}

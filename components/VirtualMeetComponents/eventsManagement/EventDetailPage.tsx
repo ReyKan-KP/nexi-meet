@@ -6,7 +6,8 @@ import Image from "next/image";
 import dynamic from "next/dynamic";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { X } from "lucide-react"; // Import the X icon from lucide-react
+import { X, Trash2 } from "lucide-react"; // Import the X and Trash2 icons from lucide-react
+import { useSession } from "next-auth/react";
 import { Map } from "@/components/Map";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -14,21 +15,36 @@ gsap.registerPlugin(ScrollTrigger);
 // const Map = dynamic(() => import("@/components/Map"), { ssr: false });
 const RichTextEditor = dynamic(() => import("@/components/RichTextEditor"), { ssr: false });
 
-const EventCard: React.FC<{ event: any; onClick: () => void }> = ({ event, onClick }) => (
-  <motion.div
-    className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer"
-    whileHover={{ scale: 1.05 }}
-    onClick={onClick}
-  >
-    <Image src={event.banner} alt={event.name} width={300} height={200} objectFit="cover" />
-    <div className="p-4">
-      <h3 className="text-xl font-bold mb-2">{event.name}</h3>
-      <p className="text-gray-600 mb-2">{event.date}</p>
-      <p className="text-gray-500 mb-2">{event.location}</p>
-      <p className="text-sm text-blue-500">#{event.category}</p>
-    </div>
-  </motion.div>
-);
+const EventCard: React.FC<{ event: any; onClick: () => void; onDelete: () => void }> = ({ event, onClick, onDelete }) => {
+  const { data: session } = useSession();
+
+  return (
+    <motion.div
+      className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer relative"
+      whileHover={{ scale: 1.05 }}
+      onClick={onClick}
+    >
+      {session?.user?.email === event.userEmail && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete();
+          }}
+          className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors duration-200"
+        >
+          <Trash2 size={16} />
+        </button>
+      )}
+      <Image src={event.banner} alt={event.name} width={300} height={200} objectFit="cover" />
+      <div className="p-4">
+        <h3 className="text-xl font-bold mb-2">{event.name}</h3>
+        <p className="text-gray-600 mb-2">{event.date}</p>
+        <p className="text-gray-500 mb-2">{event.location}</p>
+        <p className="text-sm text-blue-500">#{event.category}</p>
+      </div>
+    </motion.div>
+  );
+};
 
 const EventModal: React.FC<{ event: any; onClose: () => void }> = ({ event, onClose }) => {
   const bannerRef = useRef<HTMLDivElement>(null);
@@ -276,6 +292,8 @@ const EventModal: React.FC<{ event: any; onClose: () => void }> = ({ event, onCl
 const EventDetailPage: React.FC = () => {
   const [events, setEvents] = useState<any[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [eventToDelete, setEventToDelete] = useState<any | null>(null);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -295,6 +313,26 @@ const EventDetailPage: React.FC = () => {
     fetchEvents();
   }, []);
 
+  const handleDelete = async () => {
+    if (eventToDelete) {
+      try {
+        const response = await fetch(`/api/events/${eventToDelete._id}`, {
+          method: 'DELETE',
+        });
+        if (response.ok) {
+          setEvents(events.filter(event => event._id !== eventToDelete._id));
+          setShowDeleteConfirm(false);
+          setEventToDelete(null);
+        } else {
+          const errorData = await response.json();
+          console.error('Failed to delete event:', errorData.error);
+        }
+      } catch (error) {
+        console.error('Error deleting event:', error);
+      }
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold mb-8">Upcoming Events</h1>
@@ -305,19 +343,17 @@ const EventDetailPage: React.FC = () => {
             event={{
               ...event,
               name: event.eventName,
-              date: `${new Date(
-                event.startDate
-              ).toLocaleDateString()} - ${new Date(
-                event.endDate
-              ).toLocaleDateString()}`,
-              location:
-                event.locationType === "virtual"
-                  ? "Virtual"
-                  : event.physicalAddress,
+              date: `${new Date(event.startDate).toLocaleDateString()} - ${new Date(event.endDate).toLocaleDateString()}`,
+              location: event.locationType === "virtual" ? "Virtual" : event.physicalAddress,
               banner: event.bannerUrl,
               category: event.eventCategory,
+              userEmail: event.userEmail,
             }}
             onClick={() => setSelectedEvent(event)}
+            onDelete={() => {
+              setEventToDelete(event);
+              setShowDeleteConfirm(true);
+            }}
           />
         ))}
       </div>
@@ -331,10 +367,7 @@ const EventDetailPage: React.FC = () => {
               endDate: new Date(selectedEvent.endDate).toLocaleDateString(),
               startTime: selectedEvent.startTime,
               endTime: selectedEvent.endTime,
-              location:
-                selectedEvent.locationType === "virtual"
-                  ? "Virtual"
-                  : selectedEvent.physicalAddress,
+              location: selectedEvent.locationType === "virtual" ? "Virtual" : selectedEvent.physicalAddress,
               description: selectedEvent.eventDescription,
               banner: selectedEvent.bannerUrl,
               organizer: {
@@ -342,8 +375,20 @@ const EventDetailPage: React.FC = () => {
                 image: selectedEvent.organizer.imageUrl,
               },
               category: selectedEvent.eventCategory,
+              userEmail: selectedEvent.userEmail,
             }}
             onClose={() => setSelectedEvent(null)}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {showDeleteConfirm && (
+          <DeleteConfirmModal
+            onClose={() => {
+              setShowDeleteConfirm(false);
+              setEventToDelete(null);
+            }}
+            onConfirm={handleDelete}
           />
         )}
       </AnimatePresence>
@@ -538,6 +583,33 @@ const VirtualLinkModal: React.FC<{ link: string; onClose: () => void }> = ({ lin
           >
             Close
           </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
+const DeleteConfirmModal: React.FC<{ onClose: () => void; onConfirm: () => void }> = ({ onClose, onConfirm }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ y: 50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: 50, opacity: 0 }}
+        className="bg-white p-8 rounded-lg relative"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2 className="text-2xl font-bold mb-4">Confirm Deletion</h2>
+        <p className="mb-4">Are you sure you want to delete this event?</p>
+        <div className="flex justify-end">
+          <button onClick={onClose} className="mr-2 px-4 py-2 bg-gray-200 rounded">Cancel</button>
+          <button onClick={onConfirm} className="px-4 py-2 bg-red-500 text-white rounded">Delete</button>
         </div>
       </motion.div>
     </motion.div>

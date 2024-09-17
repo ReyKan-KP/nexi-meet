@@ -41,7 +41,7 @@ const eventSchema = new mongoose.Schema(
     sponsors: [sponsorSchema],
     ticketType: {
       type: String,
-      enum: ["free", "paid", "donation"],
+      enum: ["free", "paid"],
       required: true,
     },
     capacity: { type: Number, required: true },
@@ -49,6 +49,10 @@ const eventSchema = new mongoose.Schema(
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     userName: { type: String, required: true },
     userEmail: { type: String, required: true },
+    ticketPrice: { type: Number }, // New field for ticket price
+    paymentMethod: { type: String, enum: ["bank", "upi"] }, // New field for payment method
+    bankAccountNumber: { type: String }, // New field for bank account number
+    upiId: { type: String }, // New field for UPI ID
   },
   { timestamps: true }
 );

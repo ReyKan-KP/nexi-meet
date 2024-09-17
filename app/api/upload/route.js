@@ -1,11 +1,14 @@
 export const runtime = "nodejs";
 import { NextResponse } from "next/server";
-import { promises as fs } from "fs";
-import path from "path";
 import formidable from "formidable";
+import cloudinary from "cloudinary";
 
-// Disable the default body parser
-// export const runtime = "edge";
+// Configure Cloudinary
+cloudinary.v2.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export async function POST(req) {
   const formData = await req.formData();
@@ -18,26 +21,25 @@ export async function POST(req) {
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
 
-  // Create a unique filename
-  const filename = `${Date.now()}-${file.name}`;
-
-  // Define the path where the file will be saved
-  const uploadDir = path.join(process.cwd(), "public", "uploads");
-  const filePath = path.join(uploadDir, filename);
-
   try {
-    // Ensure the upload directory exists
-    await fs.mkdir(uploadDir, { recursive: true });
+    // Upload the file to Cloudinary
+    const result = await new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.v2.uploader.upload_stream(
+        { resource_type: "auto" },
+        (error, result) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(result);
+          }
+        }
+      );
+      uploadStream.end(buffer);
+    });
 
-    // Write the file to the server
-    await fs.writeFile(filePath, buffer);
-
-    // Generate the URL for the uploaded file
-    const fileUrl = `/uploads/${filename}`;
-
-    return NextResponse.json({ url: fileUrl });
+    return NextResponse.json({ url: result.secure_url });
   } catch (error) {
-    console.error("Error saving file:", error);
+    console.error("Error uploading file to Cloudinary:", error);
     return NextResponse.json(
       { error: "Error uploading file" },
       { status: 500 }
