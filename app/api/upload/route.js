@@ -4,11 +4,7 @@ import path from 'path';
 import formidable from 'formidable';
 
 // Disable the default body parser
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+export const runtime = 'edge';
 
 export async function POST(req) {
   const formData = await req.formData();
