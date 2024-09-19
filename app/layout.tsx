@@ -5,6 +5,7 @@ import Nav from "@components/Nav";
 import Footer from "@components/Footer";
 import ToastContainerComponent from "@components/ToastContainerComponent";
 import Provider from "@components/Provider";
+import { Analytics } from "@vercel/analytics/react";
 
 import { ThemeProvider } from "@components/ui/theme-provider";
 
@@ -46,6 +47,7 @@ export default function RootLayout({
               <ToastContainerComponent />
               <Nav />
               {children}
+              <Analytics />
               <Footer />
             </main>
           </ThemeProvider>

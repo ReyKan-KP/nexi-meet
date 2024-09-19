@@ -107,7 +107,7 @@ const Nav = () => {
 
       <div className="hidden md:flex items-center space-x-4">
         <Link
-          href="/about-us"
+          href="/AboutUs"
           className="text-gray-700 no-underline hover:text-blue-400"
         >
           About Us
@@ -254,7 +254,7 @@ const Nav = () => {
             </Link>
           )}
           <Link
-            href="/about-us"
+            href="/AboutUs"
             className="text-white no-underline hover:text-blue-400 mb-4"
             onClick={handleSideMenuToggle}
           >

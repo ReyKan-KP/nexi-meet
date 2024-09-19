@@ -11,8 +11,11 @@ const nextConfig = {
         hostname: "lh3.googleusercontent.com",
         pathname: "**",
       },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+      },
     ],
-    domains: ['res.cloudinary.com'],
   },
   webpack(config) {
     config.experiments = {
