@@ -155,7 +155,7 @@ const TeamSection = () => {
     {
       name: "Kanishaka Pranjal",
     //   role: "CEO",
-      image: "/images/team/alice.jpg",
+      image: "",
       linkedin: "https://www.linkedin.com/in/kanishaka-pranjal-070a45235/",
       github: "https://github.com/ReyKan-KP",
     },

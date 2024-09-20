@@ -5,7 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import MeetingTypeList from "@components/VirtualMeetComponents/MeetingTypeList";
 import UpcomingEventsList from "@components/VirtualMeetComponents/UpcomingEventsList";
 import EventCreationPage from "@/components/VirtualMeetComponents/eventsManagement/EventCreationPage";
-import EventDetailPage from "@/components/VirtualMeetComponents/eventsManagement/EventDetailPage";
+import EventDetailPage from "@/components/VirtualMeetComponents/eventsManagement/EventDetail/EventDetailPage";
+
 import EventDashboard from "@/components/VirtualMeetComponents/eventsManagement/EventDashboard";
 import PersonalRoom from "./personal-room/page";
 // import UpcomingPage from "./upcoming-events/page";

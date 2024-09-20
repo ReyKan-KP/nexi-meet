@@ -112,7 +112,7 @@ const Nav = () => {
         >
           About Us
         </Link>
-        <div className="relative" ref={dropdownRef}>
+        {/* <div className="relative" ref={dropdownRef}>
           <div
             className="flex items-center cursor-pointer"
             onClick={handleDropdownClick}
@@ -155,12 +155,18 @@ const Nav = () => {
               ))}
             </div>
           )}
-        </div>
+        </div> */}
         <Link
           href="/Contact"
           className="text-gray-700 no-underline hover:text-blue-400"
         >
           Contact Us
+        </Link>
+        <Link
+          href="/Events"
+          className="text-gray-700 no-underline hover:text-blue-400"
+        >
+          Events
         </Link>
         {session ? (
           <button
@@ -260,7 +266,7 @@ const Nav = () => {
           >
             About Us
           </Link>
-          <div className="relative mb-4">
+          {/* <div className="relative mb-4">
             <div
               className="flex items-center cursor-pointer"
               onClick={handleDropdownClick}
@@ -304,7 +310,7 @@ const Nav = () => {
                 ))}
               </div>
             )}
-          </div>
+          </div> */}
           <Link
             href="/Contact"
             className="text-white no-underline hover:text-blue-400 mb-4"
