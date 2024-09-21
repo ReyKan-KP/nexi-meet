@@ -26,13 +26,9 @@ export async function POST(request) {
 
 export async function GET() {
   try {
-    // Fetch all registration data from the EventRegistration collection
     const registrations = await EventRegistration.find().populate(
       "eventId userId"
     );
-
-    // console.log("All registrations:", registrations); // Debugging log for all registrations
-
     return NextResponse.json({ registrations }, { status: 200 });
   } catch (error) {
     console.error("Error fetching registrations:", error);

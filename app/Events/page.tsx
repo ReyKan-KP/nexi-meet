@@ -65,6 +65,35 @@ const EventDetailPage: React.FC = () => {
     fetchEvents();
   }, []);
 
+  const postUserEngagement = async (
+    eventId: string,
+    action: string,
+    searchTerm?: string,
+    timeSpent?: number
+  ) => {
+    try {
+      const body = {
+        eventId,
+        action,
+        searchTerm,
+        timeSpent,
+      };
+      const response = await fetch("/api/events/userEngagement", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (!response.ok) {
+        console.error("Failed to log user engagement");
+      }
+    } catch (error) {
+      console.error("Error posting user engagement:", error);
+    }
+  };
+
   const handleDelete = async () => {
     if (eventToDelete) {
       try {
@@ -140,8 +169,39 @@ const EventDetailPage: React.FC = () => {
         event.organizer.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredEvents(sortEvents(filtered));
+    // if (searchTerm) {
+    //   postUserEngagement("all", "search", searchTerm);
+    // }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm, sortOption, events]);
+
+  const handleEventClick = (event: any) => {
+    setSelectedEvent(event);
+    postUserEngagement(event._id, "click"); // Record click on card
+    postUserEngagement(event._id, "view"); // Record view when modal opens
+  };
+
+  const handleRSVP = (eventId: string) => {
+    postUserEngagement(eventId, "rsvp");
+  };
+
+  // Example of tracking time spent (just a placeholder, you could use timers for more accuracy)
+  useEffect(() => {
+    const startTime = Date.now();
+
+    return () => {
+      const timeSpent = (Date.now() - startTime) / 1000; // Convert to seconds
+      if (selectedEvent) {
+        postUserEngagement(
+          selectedEvent._id,
+          "timeSpent",
+          undefined,
+          timeSpent
+        );
+      }
+    };
+  }, [selectedEvent]);
+
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -220,15 +280,9 @@ const EventDetailPage: React.FC = () => {
               <SelectItem value="asc-date" className="inline-flex">
                 Start Date (Asc)
               </SelectItem>
-              <SelectItem value="desc-date">
-                Start Date (Desc)
-              </SelectItem>
-              <SelectItem value="asc-title">
-                Title (A-Z)
-              </SelectItem>
-              <SelectItem value="desc-title">
-                Title (Z-A)
-              </SelectItem>
+              <SelectItem value="desc-date">Start Date (Desc)</SelectItem>
+              <SelectItem value="asc-title">Title (A-Z)</SelectItem>
+              <SelectItem value="desc-title">Title (Z-A)</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -252,6 +306,7 @@ const EventDetailPage: React.FC = () => {
                   layout="fill"
                   objectFit="contain"
                   className="transition-transform duration-300 ease-in-out transform hover:scale-105"
+                  onClick={() => handleEventClick(event)}
                 />
                 {session?.user?.email === event.userEmail && (
                   <button
@@ -306,7 +361,10 @@ const EventDetailPage: React.FC = () => {
               <CardFooter>
                 <Button
                   className="w-full"
-                  onClick={() => setSelectedEvent(event)}
+                  onClick={() => {
+                    setSelectedEvent(event);
+                    handleRSVP(event._id);
+                  }}
                 >
                   View Details
                 </Button>
@@ -340,7 +398,10 @@ const EventDetailPage: React.FC = () => {
               category: selectedEvent.eventCategory,
               userEmail: selectedEvent.userEmail,
             }}
-            onClose={() => setSelectedEvent(null)}
+            onClose={() => {
+              setSelectedEvent(null);
+              postUserEngagement(selectedEvent._id, "view"); // Record view when modal is closed
+            }}
           />
         )}
       </AnimatePresence>
