@@ -6,12 +6,16 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { FaLinkedin, FaGithub } from "react-icons/fa";
 // import { ChevronRightIcon } from "@heroicons/react/24/solid";
+import { IoIosContact } from "react-icons/io";
+import { MdOutlineExplore } from "react-icons/md";
+// import { FaRegEye } from "react-icons/fa";
 
-// Hero Section Component
-import { useSession } from "next-auth/react"; // Add this import
+import { useSession } from "next-auth/react";
+
+
 
 const HeroSection = () => {
-  const { data: session } = useSession(); // Add this line to get the session
+  const { data: session } = useSession(); 
 
   return (
     <motion.section
@@ -67,7 +71,7 @@ const OurStorySection = () => {
             </h2>
             <div className="space-y-6">
               <p className="text-base lg:text-lg text-gray-600">
-                NexiMeet started as my personal project in 2023 with a simple
+                NexiMeet started as my personal project in 2024 with a simple
                 idea: to make virtual events as engaging and impactful as
                 in-person ones. The journey has been filled with innovation,
                 challenges, and groundbreaking solutions.
@@ -155,7 +159,7 @@ const TeamSection = () => {
     {
       name: "Kanishaka Pranjal",
     //   role: "CEO",
-      image: "",
+      image: "/images/kp.jpg",
       linkedin: "https://www.linkedin.com/in/kanishaka-pranjal-070a45235/",
       github: "https://github.com/ReyKan-KP",
     },
@@ -175,6 +179,7 @@ const TeamSection = () => {
         Our Team
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div></div>
         {teamMembers.map((member, index) => (
           <div key={index} className="relative group">
             <div className="bg-white shadow-lg p-6 lg:p-8 rounded-lg">
@@ -222,33 +227,188 @@ const TeamSection = () => {
   );
 };
 
-// CTA Section Component
-const CTASection = () => (
-  <motion.section
-    initial={{ opacity: 0, x: 100 }}
-    whileInView={{ opacity: 1, x: 0 }}
-    transition={{ duration: 0.8 }}
-    className="bg-teal-600 py-16 px-10"
-  >
-    <div className="container mx-auto text-center">
-      <h2 className="text-3xl font-bold text-white mb-6">Join Our Journey</h2>
-      <div className="space-x-4">
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          className="bg-white text-teal-600 px-8 py-3 rounded-full font-medium hover:bg-gray-100 transition duration-300"
-        >
-          Contact Us
-        </motion.button>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          className="bg-transparent text-white border-2 border-white px-8 py-3 rounded-full font-medium hover:bg-white hover:text-teal-600 transition duration-300"
-        >
-          Explore NexiMeet
-        </motion.button>
+const CTASection = () => {
+  const { data: session } = useSession();
+
+  return (
+    <>
+      <motion.section
+        initial={{ opacity: 0, x: 100 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.8 }}
+        className="bg-teal-600 py-16 px-10"
+      >
+        <div className="container mx-auto text-center">
+          <h2 className="text-3xl font-bold text-white mb-6">
+            Join Our Journey
+          </h2>
+          <div className="space-x-4">
+            <Link href="/Contact">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                className="bg-white text-teal-600 px-8 py-3 rounded-full font-medium hover:bg-gray-100 transition duration-300 inline-flex items-center justify-center space-x-2"
+              >
+                <IoIosContact />
+                <span>Contact Us</span>
+              </motion.button>
+            </Link>
+            <Link href={session ? "/virtualMeetHome" : "/sign-up"} passHref>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                className="bg-transparent text-white border-2 border-white px-8 py-3 rounded-full font-medium hover:bg-white hover:text-teal-600 transition duration-300 inline-flex items-center justify-center space-x-2"
+              >
+                <MdOutlineExplore />
+                <span>Explore NexiMeet</span>
+              </motion.button>
+            </Link>
+          </div>
+        </div>
+      </motion.section>
+    </>
+  );
+}
+
+const VisionSection = () => {
+  return (
+    <motion.section
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8 }}
+      className="py-16 bg-teal-100"
+    >
+      <div className="container mx-auto text-center">
+        <div className="flex justify-center items-center mb-6">
+          {/* <FaRegEye size={21} color="teal"/> */}
+          <h2 className="text-3xl font-bold text-teal-600">Our Vision</h2>
+        </div>
+        <p className="text-lg lg:text-xl text-gray-700 max-w-3xl mx-auto">
+          NexiMeet aims to revolutionize the way we connect online, making every
+          virtual interaction as meaningful and engaging as an in-person one. We
+          believe in bridging the gap between technology and human connection.
+        </p>
       </div>
-    </div>
-  </motion.section>
-);
+    </motion.section>
+  );
+};
+
+// Features Section Component
+const FeaturesSection = () => {
+  const features = [
+    { title: "Live Streaming", description: "Stream events in real-time with high-quality video and audio." },
+    { title: "Interactive Tools", description: "Polls, Q&A sessions, and chat integrations to boost attendee participation." },
+    { title: "Customizable Exhibitor Booths", description: "Create immersive and interactive exhibitor booths to showcase products and services." },
+    { title: "Attendee Engagement", description: "Connect with attendees through networking tools, private messaging, and more." },
+    { title: "Seamless Registration", description: "Simplified event registration and management tools for both organizers and attendees." },
+  ];
+
+  return (
+    <motion.section
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8 }}
+      className="py-16 bg-gray-50"
+    >
+      <div className="container mx-auto text-center">
+        <h2 className="text-3xl font-bold text-gray-800 mb-10">
+          Key Features
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {features.map((feature, index) => (
+            <motion.div
+              key={index}
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.3 }}
+              className="bg-white p-6 rounded-lg shadow-lg"
+            >
+              <h3 className="text-xl font-semibold text-teal-600 mb-4">
+                {feature.title}
+              </h3>
+              <p className="text-gray-700">{feature.description}</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </motion.section>
+  );
+};
+// Values Section Component
+const ValuesSection = () => {
+  const values = [
+    { title: "Innovation", description: "We continually push the boundaries to create groundbreaking solutions." },
+    { title: "Collaboration", description: "Our platform fosters collaboration and meaningful connections." },
+    { title: "User-Centric", description: "We prioritize the needs of our users to deliver an intuitive experience." },
+    { title: "Accessibility", description: "Ensuring that our platform is accessible to everyone, everywhere." },
+  ];
+
+  return (
+    <motion.section
+      initial={{ opacity: 0, x: -100 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.8 }}
+      className="py-16 bg-white"
+    >
+      <div className="container mx-auto text-center">
+        <h2 className="text-3xl font-bold text-gray-800 mb-6">Our Values</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {values.map((value, index) => (
+            <motion.div
+              key={index}
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.3 }}
+              className="bg-gray-50 p-6 rounded-lg shadow-lg"
+            >
+              <h3 className="text-xl font-semibold text-teal-600 mb-4">
+                {value.title}
+              </h3>
+              <p className="text-gray-600">{value.description}</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </motion.section>
+  );
+};
+// Use Cases Section Component
+const UseCasesSection = () => {
+  const useCases = [
+    { title: "Corporate Events", description: "Host engaging corporate meetings, workshops, and seminars with ease." },
+    { title: "Trade Shows", description: "Organize virtual trade shows with customizable booths and interactive sessions." },
+    { title: "Webinars", description: "Deliver educational content and connect with your audience through live Q&A and discussions." },
+    { title: "Product Launches", description: "Showcase new products to a global audience with interactive features." },
+  ];
+
+  return (
+    <motion.section
+      initial={{ opacity: 0, x: 100 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.8 }}
+      className="py-16 bg-gray-50"
+    >
+      <div className="container mx-auto text-center">
+        <h2 className="text-3xl font-bold text-teal-600 mb-10">
+          Use Cases
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {useCases.map((useCase, index) => (
+            <motion.div
+              key={index}
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.3 }}
+              className="bg-white p-6 rounded-lg shadow-lg"
+            >
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                {useCase.title}
+              </h3>
+              <p className="text-gray-600">{useCase.description}</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </motion.section>
+  );
+};
+
+
 
 // Main About Us Component
 export default function AboutUs() {
@@ -256,8 +416,13 @@ export default function AboutUs() {
     <div className="font-sans">
       <HeroSection />
       <OurStorySection />
+      <VisionSection />
+      <FeaturesSection />
+      <ValuesSection />
+      <UseCasesSection />
       <TeamSection />
       <CTASection />
     </div>
   );
 }
+

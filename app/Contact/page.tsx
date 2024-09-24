@@ -34,9 +34,12 @@ const Contact = () => {
         process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || "",
         {
           from_name: formData.name,
+          to_name: "NexiMeet",
           from_email: formData.email,
+          to_email: "kanishakpranjal@gmail.com",
           phone: formData.phone,
           message: formData.message,
+          reply_to: formData.email,
         },
         process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
       )
@@ -97,7 +100,7 @@ const Contact = () => {
                 className={styles.avatar}
               />
               <div>
-                <h4 className={styles.authorName}>Devon Lane</h4>
+                <h4 className={styles.authorName}>John Doe</h4>
                 <p className={styles.authorTitle}>Co-Founder, Design.co</p>
               </div>
             </div>

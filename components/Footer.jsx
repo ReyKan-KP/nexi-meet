@@ -21,25 +21,27 @@ const Footer = () => {
         </div>
         <div className="flex flex-col md:flex-row text-gray-700">
           <div className="mb-6 md:mb-0 md:mr-8">
-            <h5 className="font-bold mb-2 hover:text-blue-400">Contact Us</h5>
+            <Link href="/Contact">
+              <h5 className="font-bold mb-2 hover:text-blue-400">Contact Us</h5>
+            </Link>
             <ul>
               <li className="mb-2">
-                <Link href="#">
+                <Link href="/AboutUs">
                   <span className="hover:text-blue-400">About Us</span>
                 </Link>
               </li>
-              <li className="mb-2">
+              {/* <li className="mb-2">
                 <Link href="#">
                   <span className="hover:text-blue-400">Careers</span>
                 </Link>
-              </li>
+              </li> */}
               <li className="mb-2">
-                <Link href="#">
+                <Link href="/Events">
                   <span className="hover:text-blue-400">Blog</span>
                 </Link>
               </li>
               <li>
-                <Link href="#">
+                <Link href="/virtualMeetHome">
                   <span className="hover:text-blue-400">
                     Meet an Event Planner
                   </span>
@@ -67,13 +69,13 @@ const Footer = () => {
                   </span>
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link href="#">
                   <span className="hover:text-blue-400">
                     Event Manager Portal
                   </span>
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
         </div>
