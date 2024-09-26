@@ -18,7 +18,6 @@ const MeetingPage = () => {
   const [isSetupComplete, setIsSetupComplete] = useState(false);
 
   if (status === "loading" || isCallLoading) return <Loader />;
-
   if (!call) {
     return (
       <p className="text-center text-3xl font-bold text-white">
@@ -43,7 +42,7 @@ const MeetingPage = () => {
           {!isSetupComplete ? (
             <MeetingSetup setIsSetupComplete={setIsSetupComplete} />
           ) : (
-              <MeetingRoom />
+              <MeetingRoom id={id}/>
           )}
         </StreamTheme>
       </StreamCall>

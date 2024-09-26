@@ -22,6 +22,6 @@
     },
     "typeRoots": ["./types", "./node_modules/@types"]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "components/Nav.jsx", "app/api/auth/[...nextauth]/route.js", "components/VirtualMeetComponents/VirtualMeetNav.jsx", "app/(LandingPage)/sections/Features/page.tsx", "app/(LandingPage)/sections/Features/Feature.tsx", "app/api/notes/create/route.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "components/Nav.jsx", "app/api/auth/[...nextauth]/route.js", "components/VirtualMeetComponents/VirtualMeetNav.jsx", "app/(LandingPage)/sections/Features/page.tsx", "app/(LandingPage)/sections/Features/Feature.tsx", "app/api/notes/create/route.js", "components/VirtualMeetComponents/Chat/MainPanel.jsx"],
   "exclude": ["node_modules"]
 }
